@@ -67,7 +67,7 @@ def main():
     if not status:
         print("-> No changes since last deploy - site already current.")
     else:
-        git(["commit", "-m", "Deploy ProcessIQ demo (built, synthetic data only)"], cwd=TMP)
+        git(["commit", "-m", "Deploy Process Transformation Accelerator (built, synthetic data only)"], cwd=TMP)
         print("-> Pushing to origin/%s..." % BRANCH)
         push = git(["push", "origin", BRANCH], cwd=TMP, check=False)
         if push.returncode != 0:
@@ -79,7 +79,7 @@ def main():
     if os.path.isdir(TMP):
         shutil.rmtree(TMP, ignore_errors=True)
 
-    print("\n✓ Deployed.  %s" % URL)
+    print("\n[OK] Deployed.  %s" % URL)
     print("  (GitHub Pages may take ~1 minute to refresh its CDN.)")
 
 
