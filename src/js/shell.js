@@ -24,7 +24,9 @@
     _erpListeners: [],
     // the process an SME is composing — threaded through all three stages
     composition: {
-      fnId: null, procId: null, roleId: null, objId: null,
+      fnId: null, procId: null,
+      roleIds: [],        // all personas participating in the chosen process
+      objIds: [],         // objectives in scope (across the selected personas)
       patternIds: [],     // selected patterns
       blocks: {},         // blockKey -> { mode:'auto'|'hitl', tech:string, configured:bool }
       live: false,        // promoted to Run & Govern
@@ -72,11 +74,34 @@
   PIQ.fn = function () {
     return (PIQ.tax.functions || []).filter(function (f) { return f.id === PIQ.composition.fnId; })[0] || null;
   };
-  PIQ.objective = function () {
+  PIQ.proc = function () {
     var f = PIQ.fn(); var c = PIQ.composition; if (!f) return null;
-    var p = f.processes.filter(function (x) { return x.id === c.procId; })[0]; if (!p) return null;
-    var r = p.roles.filter(function (x) { return x.id === c.roleId; })[0]; if (!r) return null;
-    return r.objectives.filter(function (x) { return x.id === c.objId; })[0] || null;
+    return f.processes.filter(function (x) { return x.id === c.procId; })[0] || null;
+  };
+  // personas (roles) currently in scope
+  PIQ.roles = function () {
+    var p = PIQ.proc(); var c = PIQ.composition; if (!p) return [];
+    return p.roles.filter(function (r) { return c.roleIds.indexOf(r.id) >= 0; });
+  };
+  // objectives in scope, across every selected persona
+  PIQ.objectives = function () {
+    var p = PIQ.proc(); var c = PIQ.composition; if (!p) return [];
+    var out = [];
+    p.roles.forEach(function (r) {
+      if (c.roleIds.indexOf(r.id) < 0) return;
+      (r.objectives || []).forEach(function (o) { if (c.objIds.indexOf(o.id) >= 0) out.push(o); });
+    });
+    return out;
+  };
+  // first in-scope objective — kept for compact single-line labels
+  PIQ.objective = function () { return PIQ.objectives()[0] || null; };
+  // union of every pattern id across the in-scope objectives
+  PIQ.objectivePatternIds = function () {
+    var seen = {}, out = [];
+    PIQ.objectives().forEach(function (o) {
+      (o.patternIds || []).forEach(function (id) { if (!seen[id]) { seen[id] = 1; out.push(id); } });
+    });
+    return out;
   };
 
   // Decompose selected patterns into unique configurable action blocks.
@@ -120,7 +145,7 @@
   };
 
   PIQ.resetComposition = function () {
-    PIQ.composition = { fnId: null, procId: null, roleId: null, objId: null,
+    PIQ.composition = { fnId: null, procId: null, roleIds: [], objIds: [],
       patternIds: [], blocks: {}, live: false };
     PIQ.persistComposition();
   };
@@ -138,7 +163,8 @@
       if (saved.fnId && !(PIQ.tax.functions || []).some(function (f) { return f.id === saved.fnId; })) return;
       PIQ.composition = {
         fnId: saved.fnId || null, procId: saved.procId || null,
-        roleId: saved.roleId || null, objId: saved.objId || null,
+        roleIds: Array.isArray(saved.roleIds) ? saved.roleIds : [],
+        objIds: Array.isArray(saved.objIds) ? saved.objIds : [],
         patternIds: Array.isArray(saved.patternIds) ? saved.patternIds : [],
         blocks: saved.blocks && typeof saved.blocks === "object" ? saved.blocks : {},
         live: !!saved.live,
@@ -184,10 +210,12 @@
     var c = PIQ.composition, f = PIQ.fn();
     if (!f) return '<span class="cr-empty">No process selected — start in Studio</span>';
     var parts = [f.name];
-    var obj = PIQ.objective();
-    if (obj) parts.push(obj.name);
-    var n = c.patternIds.length;
+    var p = PIQ.proc();
+    if (p) parts.push(p.name);
     var s = parts.map(function (x) { return '<span>' + esc(x) + '</span>'; }).join('<i>›</i>');
+    var nr = c.roleIds.length;
+    if (nr) s += '<i>›</i><span class="cr-count">' + nr + ' persona' + (nr > 1 ? "s" : "") + '</span>';
+    var n = c.patternIds.length;
     if (n) s += '<i>›</i><span class="cr-count">' + n + ' pattern' + (n > 1 ? "s" : "") + '</span>';
     if (c.live) s += '<span class="cr-live">● LIVE</span>';
     return s;
