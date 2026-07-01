@@ -515,6 +515,24 @@ button{font-family:inherit;cursor:pointer}
 .st-step.done .st-dot{background:var(--act);color:#fff}
 .st-step.on{background:#eef5f6}
 .st-sep{flex:1;height:2px;background:var(--line);min-width:14px;margin:0 2px}
+.st-back{margin:0 0 14px;color:var(--muted)}
+.st-back:hover{border-color:var(--brand2);color:var(--brand)}
+.st-work{display:grid;grid-template-columns:1fr 300px;gap:20px;align-items:start}
+@media(max-width:1080px){.st-work{grid-template-columns:1fr}}
+.st-summary{position:sticky;top:16px;background:#fff;border:1px solid var(--line);border-radius:13px;
+  padding:16px 16px;box-shadow:var(--shadow)}
+.st-summary .sum-h{display:flex;align-items:center;justify-content:space-between;font-size:12px;font-weight:800;
+  letter-spacing:.04em;text-transform:uppercase;color:var(--brand);margin:0 0 12px}
+.sum-row{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-top:1px solid var(--line);font-size:13px}
+.sum-row:first-of-type{border-top:0}
+.sum-row.col{flex-direction:column;gap:8px}
+.sum-k{color:var(--muted);font-weight:700;white-space:nowrap}
+.sum-k b{color:var(--brand2)}
+.sum-v{color:var(--ink);font-weight:650;text-align:right}
+.sum-chips{display:flex;flex-wrap:wrap;gap:6px}
+.sum-chip{font-size:11.5px;font-weight:650;background:#eef5f6;color:var(--ink);border:1px solid var(--line);
+  border-radius:999px;padding:3px 9px}
+.sum-chip i{color:var(--brand2);font-style:normal;font-size:10px}
 .st-q{font-size:18px;font-weight:750;letter-spacing:-.01em;margin:0 0 16px}
 .st-q b{color:var(--brand)}
 .st-hint{color:var(--muted);font-size:13px;margin:-8px 0 18px;max-width:760px}
@@ -5370,6 +5388,28 @@ button{font-family:inherit;cursor:pointer}
   PIQ.resetComposition = function () {
     PIQ.composition = { fnId: null, procId: null, roleId: null, objId: null,
       patternIds: [], blocks: {}, live: false };
+    PIQ.persistComposition();
+  };
+
+  /* ---- composition persistence (survives reloads) ---------------------- */
+  var STORE_KEY = "piq.composition.v1";
+  PIQ.persistComposition = function () {
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(PIQ.composition)); } catch (e) {}
+  };
+  PIQ.restoreComposition = function () {
+    try {
+      var raw = localStorage.getItem(STORE_KEY); if (!raw) return;
+      var saved = JSON.parse(raw); if (!saved || typeof saved !== "object") return;
+      // only restore if the saved function still exists in the taxonomy
+      if (saved.fnId && !(PIQ.tax.functions || []).some(function (f) { return f.id === saved.fnId; })) return;
+      PIQ.composition = {
+        fnId: saved.fnId || null, procId: saved.procId || null,
+        roleId: saved.roleId || null, objId: saved.objId || null,
+        patternIds: Array.isArray(saved.patternIds) ? saved.patternIds : [],
+        blocks: saved.blocks && typeof saved.blocks === "object" ? saved.blocks : {},
+        live: !!saved.live,
+      };
+    } catch (e) {}
   };
 
   /* ---- router ---------------------------------------------------------- */
@@ -5422,6 +5462,7 @@ button{font-family:inherit;cursor:pointer}
 
   function go(id) {
     PIQ.active = id;
+    PIQ.persistComposition();
     renderNav();
     renderSub();
     var view = document.getElementById("view");
@@ -5458,7 +5499,7 @@ button{font-family:inherit;cursor:pointer}
   document.getElementById("dateStat").textContent = PIQ.book.meta.asOfDate;
 
   // Open on the Studio — the SME's front door into the journey.
-  PIQ.boot = function () { go("studio"); };
+  PIQ.boot = function () { PIQ.restoreComposition(); go("studio"); };
 })();
 
 /* Stage 1 · Design — Studio
@@ -5503,9 +5544,56 @@ button{font-family:inherit;cursor:pointer}
     root.innerHTML = "";
     root.appendChild(intro());
     root.appendChild(rail());
+    var wrap = el("div", "st-work");
     var body = el("div", "st-body");
-    root.appendChild(body);
+    wrap.appendChild(body);
+    var sum = summaryCard();
+    if (sum) wrap.appendChild(sum);
+    root.appendChild(wrap);
     drawStep(body);
+    if (window.PIQ.persistComposition) window.PIQ.persistComposition();
+  }
+
+  /* Composition workspace — the always-on recap of every selection so far.
+     Answers "what have I picked?" without leaving the current step. */
+  function summaryCard() {
+    var c = C(), f = window.PIQ.fn();
+    if (!f) return null;
+    var p = proc(), r = role(), o = window.PIQ.objective();
+    var pats = window.PIQ.selectedPatterns();
+
+    var rows = [
+      ["Function", f.name],
+      ["Process", p && p.name],
+      ["Role", r && r.name],
+      ["Objective", o && (o.name + " · " + o.kpi)]
+    ].filter(function (x) { return x[1]; }).map(function (x) {
+      return '<div class="sum-row"><span class="sum-k">' + x[0] + '</span>' +
+        '<span class="sum-v">' + esc(x[1]) + '</span></div>';
+    }).join("");
+
+    var patBlock = "";
+    if (pats.length) {
+      var chips = pats.map(function (pt) {
+        return '<span class="sum-chip">' + esc(pt.name) + (pt.sample ? ' <i>sample</i>' : '') + '</span>';
+      }).join("");
+      patBlock = '<div class="sum-row col"><span class="sum-k">Patterns <b>' + pats.length + '</b></span>' +
+        '<div class="sum-chips">' + chips + '</div></div>';
+    }
+
+    var blockRow = "";
+    var keys = Object.keys(c.blocks);
+    if (keys.length) {
+      var nConf = keys.filter(function (k) { return c.blocks[k].configured; }).length;
+      blockRow = '<div class="sum-row"><span class="sum-k">Action blocks</span>' +
+        '<span class="sum-v">' + nConf + ' / ' + keys.length + ' configured</span></div>';
+    }
+
+    var card = el("div", "st-summary",
+      '<div class="sum-h"><span>Composition workspace</span>' +
+      (c.live ? '<span class="cr-live">● LIVE</span>' : '') + '</div>' +
+      rows + patBlock + blockRow);
+    return card;
   }
 
   function intro() {
@@ -5558,9 +5646,16 @@ button{font-family:inherit;cursor:pointer}
 
   /* ---------------- steps ---------------- */
   function drawStep(body) {
+    if (state.step > 0) body.appendChild(backBtn());
     [stepFunction, stepProcess, stepRole, stepObjective, stepPatterns, stepConfigure][state.step](body);
     var rb = document.getElementById("stReset");
     if (rb) rb.onclick = function () { window.PIQ.resetComposition(); state.step = 0; redraw(); };
+  }
+
+  function backBtn() {
+    var b = el("button", "btn ghost sm st-back", "← Back to " + STEPS[state.step - 1]);
+    b.onclick = function () { state.step = Math.max(0, state.step - 1); redraw(); };
+    return b;
   }
 
   function pickGrid(items, build, onPick) {

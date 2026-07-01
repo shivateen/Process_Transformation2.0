@@ -122,6 +122,28 @@
   PIQ.resetComposition = function () {
     PIQ.composition = { fnId: null, procId: null, roleId: null, objId: null,
       patternIds: [], blocks: {}, live: false };
+    PIQ.persistComposition();
+  };
+
+  /* ---- composition persistence (survives reloads) ---------------------- */
+  var STORE_KEY = "piq.composition.v1";
+  PIQ.persistComposition = function () {
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(PIQ.composition)); } catch (e) {}
+  };
+  PIQ.restoreComposition = function () {
+    try {
+      var raw = localStorage.getItem(STORE_KEY); if (!raw) return;
+      var saved = JSON.parse(raw); if (!saved || typeof saved !== "object") return;
+      // only restore if the saved function still exists in the taxonomy
+      if (saved.fnId && !(PIQ.tax.functions || []).some(function (f) { return f.id === saved.fnId; })) return;
+      PIQ.composition = {
+        fnId: saved.fnId || null, procId: saved.procId || null,
+        roleId: saved.roleId || null, objId: saved.objId || null,
+        patternIds: Array.isArray(saved.patternIds) ? saved.patternIds : [],
+        blocks: saved.blocks && typeof saved.blocks === "object" ? saved.blocks : {},
+        live: !!saved.live,
+      };
+    } catch (e) {}
   };
 
   /* ---- router ---------------------------------------------------------- */
@@ -174,6 +196,7 @@
 
   function go(id) {
     PIQ.active = id;
+    PIQ.persistComposition();
     renderNav();
     renderSub();
     var view = document.getElementById("view");
@@ -210,5 +233,5 @@
   document.getElementById("dateStat").textContent = PIQ.book.meta.asOfDate;
 
   // Open on the Studio — the SME's front door into the journey.
-  PIQ.boot = function () { go("studio"); };
+  PIQ.boot = function () { PIQ.restoreComposition(); go("studio"); };
 })();
