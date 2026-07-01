@@ -1,8 +1,9 @@
 /* Stage 1 · Design — Studio
- * The SME's guided front door: Function → Process → Role → Objective → Patterns →
- * Action Blocks. Picking an objective surfaces the matching patterns (with their
- * DAGs); selecting patterns assembles the union of action blocks; configuring those
- * blocks (technology + auto/HITL mode) hands off to Stage 2 (Discover & Fit).
+ * The SME's guided front door: Function → Process → Personas → Objectives → Patterns →
+ * Action Blocks. Choosing a process pulls in ALL its participating personas (and their
+ * objectives) by default — the SME can then narrow scope. The in-scope objectives
+ * surface the union of matching patterns; selecting patterns assembles the union of
+ * action blocks; configuring those blocks hands off to Stage 2 (Discover & Fit).
  *
  * Patterns are the unit of variation handling and dynamic action-block sequencing;
  * the happy path (originalDAG) is the straight-through spine recorded for agentivisation.
@@ -12,7 +13,7 @@
   var PRIO = window.PIQ.meta.priorityLegend;
 
   // step machine
-  var STEPS = ["Function", "Process", "Role", "Objective", "Patterns", "Configure"];
+  var STEPS = ["Function", "Process", "Personas", "Objectives", "Patterns", "Configure"];
   var state = { step: 0 };
 
   function el(t, c, h) { var n = document.createElement(t); if (c) n.className = c; if (h != null) n.innerHTML = h; return n; }
@@ -23,8 +24,8 @@
   function resumeStep() {
     var c = C();
     if (c.patternIds.length) return 5;
-    if (c.objId) return 4;
-    if (c.roleId) return 3;
+    if (c.objIds.length) return 4;
+    if (c.roleIds.length) return 3;
     if (c.procId) return 2;
     if (c.fnId) return 1;
     return 0;
@@ -55,18 +56,21 @@
   function summaryCard() {
     var c = C(), f = window.PIQ.fn();
     if (!f) return null;
-    var p = proc(), r = role(), o = window.PIQ.objective();
+    var p = proc();
+    var roles = window.PIQ.roles();
+    var objs = window.PIQ.objectives();
     var pats = window.PIQ.selectedPatterns();
 
     var rows = [
       ["Function", f.name],
-      ["Process", p && p.name],
-      ["Role", r && r.name],
-      ["Objective", o && (o.name + " · " + o.kpi)]
+      ["Process", p && p.name]
     ].filter(function (x) { return x[1]; }).map(function (x) {
       return '<div class="sum-row"><span class="sum-k">' + x[0] + '</span>' +
         '<span class="sum-v">' + esc(x[1]) + '</span></div>';
     }).join("");
+
+    rows += chipRow("Personas", roles.map(function (r) { return r.name; }));
+    rows += chipRow("Objectives", objs.map(function (o) { return o.name; }));
 
     var patBlock = "";
     if (pats.length) {
@@ -90,6 +94,13 @@
       (c.live ? '<span class="cr-live">● LIVE</span>' : '') + '</div>' +
       rows + patBlock + blockRow);
     return card;
+  }
+
+  function chipRow(label, names) {
+    if (!names.length) return "";
+    var chips = names.map(function (n) { return '<span class="sum-chip">' + esc(n) + '</span>'; }).join("");
+    return '<div class="sum-row col"><span class="sum-k">' + label + ' <b>' + names.length + '</b></span>' +
+      '<div class="sum-chips">' + chips + '</div></div>';
   }
 
   function intro() {
@@ -120,7 +131,7 @@
 
   function isResolved(i) {
     var c = C();
-    return [!!c.fnId, !!c.procId, !!c.roleId, !!c.objId, c.patternIds.length > 0,
+    return [!!c.fnId, !!c.procId, c.roleIds.length > 0, c.objIds.length > 0, c.patternIds.length > 0,
             Object.keys(c.blocks).length > 0][i];
   }
   function chosen(i) {
@@ -128,22 +139,45 @@
     var label = "";
     if (i === 0 && f) label = f.name;
     else if (i === 1 && f && c.procId) label = (proc() || {}).name;
-    else if (i === 2 && c.roleId) label = (role() || {}).name;
-    else if (i === 3 && c.objId) label = (window.PIQ.objective() || {}).name;
+    else if (i === 2 && c.roleIds.length) label = c.roleIds.length + " persona" + (c.roleIds.length > 1 ? "s" : "");
+    else if (i === 3 && c.objIds.length) label = c.objIds.length + " objective" + (c.objIds.length > 1 ? "s" : "");
     else if (i === 4 && c.patternIds.length) label = c.patternIds.length + " selected";
     else if (i === 5 && Object.keys(c.blocks).length) label = Object.keys(c.blocks).length + " configured";
     return label ? '<small class="st-chose">' + esc(label) + '</small>' : "";
   }
 
   function proc() { var f = window.PIQ.fn(); return f && f.processes.filter(function (p) { return p.id === C().procId; })[0]; }
-  function role() { var p = proc(); return p && p.roles.filter(function (r) { return r.id === C().roleId; })[0]; }
+
+  /* re-derive scope when the persona / objective set changes.
+     Objectives default to every objective of the in-scope personas; patterns
+     default to the union across those objectives. Structural changes reset blocks. */
+  function syncObjectives(keepObjSelection) {
+    var c = C(), p = proc(); if (!p) return;
+    var valid = [];
+    p.roles.forEach(function (r) {
+      if (c.roleIds.indexOf(r.id) < 0) return;
+      (r.objectives || []).forEach(function (o) { valid.push(o.id); });
+    });
+    if (keepObjSelection) {
+      // drop objectives whose persona was removed
+      c.objIds = c.objIds.filter(function (id) { return valid.indexOf(id) >= 0; });
+    } else {
+      c.objIds = valid.slice();
+    }
+    syncPatterns();
+  }
+  function syncPatterns() {
+    var c = C();
+    c.patternIds = window.PIQ.objectivePatternIds();
+    c.blocks = {};
+  }
 
   function redraw() { draw(document.querySelector(".studio")); }
 
   /* ---------------- steps ---------------- */
   function drawStep(body) {
     if (state.step > 0) body.appendChild(backBtn());
-    [stepFunction, stepProcess, stepRole, stepObjective, stepPatterns, stepConfigure][state.step](body);
+    [stepFunction, stepProcess, stepPersonas, stepObjectives, stepPatterns, stepConfigure][state.step](body);
     var rb = document.getElementById("stReset");
     if (rb) rb.onclick = function () { window.PIQ.resetComposition(); state.step = 0; redraw(); };
   }
@@ -154,10 +188,10 @@
     return b;
   }
 
-  function pickGrid(items, build, onPick) {
+  function pickGrid(items, build, onPick, isSel) {
     var g = el("div", "pickgrid");
     items.forEach(function (it) {
-      var card = el("div", "pickcard", build(it));
+      var card = el("div", "pickcard" + (isSel && isSel(it) ? " sel" : ""), build(it));
       card.onclick = function () { onPick(it); };
       g.appendChild(card);
     });
@@ -177,66 +211,189 @@
         (on ? '<div class="pc-on">✓</div>' : '');
     }, function (f) {
       var c = C();
-      if (c.fnId !== f.id) { c.fnId = f.id; c.procId = c.roleId = c.objId = null; c.patternIds = []; c.blocks = {}; }
-      // auto-advance; if function has a single process, pre-select it
-      if (f.processes.length === 1) c.procId = f.processes[0].id;
+      if (c.fnId !== f.id) { c.fnId = f.id; c.procId = null; c.roleIds = []; c.objIds = []; c.patternIds = []; c.blocks = {}; }
+      // auto-advance; if function has a single process, pre-select it and its full persona set
+      if (f.processes.length === 1) { c.procId = f.processes[0].id; selectAllPersonas(); }
       state.step = f.processes.length === 1 ? 2 : 1;
       redraw();
     });
     body.appendChild(grid);
   }
 
-  function stepProcess(body) {
-    var f = window.PIQ.fn(); if (!f) { state.step = 0; return redraw(); }
-    body.appendChild(el("div", "st-q", "Which <b>process</b> inside " + esc(f.name) + "?"));
-    body.appendChild(pickGrid(f.processes, function (p) {
-      var on = C().procId === p.id;
-      return '<div class="pc-main"><div class="pc-t">' + esc(p.name) + '</div>' +
-        '<div class="pc-d">' + esc(p.desc) + '</div></div>' +
-        '<div class="pc-meta">' + p.roles.length + ' roles</div>' + (on ? '<div class="pc-on">✓</div>' : '');
-    }, function (p) {
-      var c = C(); if (c.procId !== p.id) { c.procId = p.id; c.roleId = c.objId = null; c.patternIds = []; c.blocks = {}; }
-      state.step = 2; redraw();
-    }));
+  // a process participates through its full set of personas — select them all
+  function selectAllPersonas() {
+    var c = C(), p = proc(); if (!p) return;
+    c.roleIds = p.roles.map(function (r) { return r.id; });
+    syncObjectives(false);
   }
 
-  function stepRole(body) {
+  function stepProcess(body) {
+    var f = window.PIQ.fn(); if (!f) { state.step = 0; return redraw(); }
+    var c = C();
+    body.appendChild(el("div", "st-q", "Which <b>process</b> inside " + esc(f.name) + "?"));
+    body.appendChild(pickGrid(f.processes, function (p) {
+      var on = c.procId === p.id;
+      return '<div class="pc-main"><div class="pc-t">' + esc(p.name) + '</div>' +
+        '<div class="pc-d">' + esc(p.desc) + '</div></div>' +
+        '<div class="pc-meta">' + p.roles.length + ' personas</div>' + (on ? '<div class="pc-on">✓</div>' : '');
+    }, function (p) {
+      if (c.procId !== p.id) { c.procId = p.id; selectAllPersonas(); }  // all personas participate by default
+      redraw();   // stay on the Process tab and reveal its hierarchy
+    }, function (p) { return c.procId === p.id; }));
+
+    var p = proc();
+    if (p) {
+      body.appendChild(hierarchy(f, p));
+      body.appendChild(nextBar(p.roles.length + " persona" + (p.roles.length !== 1 ? "s" : "") + " mapped",
+        "Continue → Personas", function () { state.step = 2; redraw(); }));
+    }
+  }
+
+  /* L1–L4 process-hierarchy tree: Function › Process › Persona › Objective.
+     Hovering a persona (L3) reveals its detail card. */
+  function hierarchy(f, p) {
+    var wrap = el("div", "phier-wrap");
+    wrap.appendChild(el("div", "st-subq", "Process hierarchy <small>L1 → L4 · hover a persona for detail</small>"));
+    var tree = el("div", "phier");
+    tree.appendChild(node(1, f.name, f.icon));
+    var l2 = el("div", "ph-children");
+    l2.appendChild(node(2, p.name));
+    var l3 = el("div", "ph-children");
+    p.roles.forEach(function (r) {
+      var branch = el("div", "ph-branch");
+      branch.appendChild(personaNode(r));
+      var l4 = el("div", "ph-children");
+      (r.objectives || []).forEach(function (o) { l4.appendChild(node(4, o.name, null, o.kpi)); });
+      branch.appendChild(l4);
+      l3.appendChild(branch);
+    });
+    l2.appendChild(l3);
+    tree.appendChild(l2);
+    wrap.appendChild(tree);
+    return wrap;
+  }
+
+  function node(lvl, name, icon, sub) {
+    return el("div", "ph-node l" + lvl,
+      '<span class="ph-lvl">L' + lvl + '</span>' +
+      (icon ? '<span class="ph-ico">' + icon + '</span>' : '') +
+      '<span class="ph-nm">' + esc(name) + '</span>' +
+      (sub ? '<small class="ph-sub">' + esc(sub) + '</small>' : ''));
+  }
+
+  function personaNode(r) {
+    var s = personaStats(r);
+    return el("div", "ph-node l3 persona",
+      '<span class="ph-lvl">L3</span><span class="ph-nm">' + esc(r.name) + '</span>' +
+      '<small class="ph-sub">' + r.objectives.length + ' obj · ' + s.patterns + ' patterns</small>' +
+      personaPop(r, s));
+  }
+
+  // derive a persona's scope from its objectives' patterns → action blocks → fitment
+  function personaStats(r) {
+    var ids = {}, out = [];
+    (r.objectives || []).forEach(function (o) {
+      (o.patternIds || []).forEach(function (id) { if (!ids[id]) { ids[id] = 1; out.push(id); } });
+    });
+    var blocks = window.PIQ.collectBlocks(out);
+    var auto = 0, hitl = 0;
+    blocks.forEach(function (b) { (window.PIQ.fitment(b).mode === "auto" ? auto++ : hitl++); });
+    return { patterns: out.length, blocks: blocks.length, auto: auto, hitl: hitl };
+  }
+
+  function personaPop(r, s) {
+    var total = (s.auto + s.hitl) || 1;
+    var autoPct = Math.round(s.auto / total * 100);
+    var objs = (r.objectives || []).map(function (o) {
+      return '<li><b>' + esc(o.name) + '</b><span>' + esc(o.kpi) + '</span></li>';
+    }).join("");
+    return '<div class="persona-pop">' +
+      '<div class="pp-h">' + esc(r.name) + '</div>' +
+      '<div class="pp-lab">Objectives</div><ul class="pp-objs">' + objs + '</ul>' +
+      '<div class="pp-stats"><div><b>' + s.patterns + '</b><span>patterns</span></div>' +
+      '<div><b>' + s.blocks + '</b><span>action blocks</span></div></div>' +
+      '<div class="pp-lab">Automation mix</div>' +
+      '<div class="pp-mix"><div class="pp-bar"><i style="width:' + autoPct + '%"></i></div>' +
+      '<span>' + s.auto + ' auto · ' + s.hitl + ' approval</span></div></div>';
+  }
+
+  /* Personas — multi-select, defaulting to every persona in the process. */
+  function stepPersonas(body) {
     var p = proc(); if (!p) { state.step = 1; return redraw(); }
-    body.appendChild(el("div", "st-q", "Whose <b>role</b> are we augmenting?"));
+    var c = C();
+    body.appendChild(el("div", "st-q",
+      "Which <b>personas</b> participate in " + esc(p.name) + "?" +
+      '<button class="linkbtn" id="stAllP">' + (c.roleIds.length === p.roles.length ? "clear all" : "select all") + '</button>'));
+    body.appendChild(el("p", "st-hint",
+      "Every persona in the process is included by default — the agents coordinate across all of them. Deselect any you want to leave out of scope."));
     body.appendChild(pickGrid(p.roles, function (r) {
-      var on = C().roleId === r.id;
+      var on = c.roleIds.indexOf(r.id) >= 0;
       var objs = r.objectives.map(function (o) { return o.name; }).join(" · ");
       return '<div class="pc-main"><div class="pc-t">' + esc(r.name) + '</div>' +
         '<div class="pc-d">' + esc(objs) + '</div></div>' +
         '<div class="pc-meta">' + r.objectives.length + ' objectives</div>' + (on ? '<div class="pc-on">✓</div>' : '');
-    }, function (r) {
-      var c = C(); if (c.roleId !== r.id) { c.roleId = r.id; c.objId = null; c.patternIds = []; c.blocks = {}; }
-      state.step = 3; redraw();
-    }));
+    }, function (r) { togglePersona(r); redraw(); },
+       function (r) { return c.roleIds.indexOf(r.id) >= 0; }));
+    body.appendChild(nextBar(c.roleIds.length + " persona" + (c.roleIds.length !== 1 ? "s" : "") + " in scope",
+      c.roleIds.length ? "Choose objectives →" : "", function () { state.step = 3; redraw(); }));
+    var all = document.getElementById("stAllP");
+    if (all) all.onclick = function (e) {
+      e.stopPropagation();
+      c.roleIds = c.roleIds.length === p.roles.length ? [] : p.roles.map(function (r) { return r.id; });
+      syncObjectives(false); redraw();
+    };
+  }
+  function togglePersona(r) {
+    var c = C(), i = c.roleIds.indexOf(r.id);
+    if (i >= 0) c.roleIds.splice(i, 1); else c.roleIds.push(r.id);
+    syncObjectives(false);   // re-derive objectives + patterns for the new persona set
   }
 
-  function stepObjective(body) {
-    var r = role(); if (!r) { state.step = 2; return redraw(); }
-    body.appendChild(el("div", "st-q", "What <b>objective</b> should the agents pursue?"));
-    body.appendChild(pickGrid(r.objectives, function (o) {
-      var on = C().objId === o.id;
-      return '<div class="pc-main"><div class="pc-t">' + esc(o.name) + '</div>' +
-        '<div class="pc-d">Measured by <b>' + esc(o.kpi) + '</b></div></div>' +
-        '<div class="pc-meta"><span class="pc-n">' + o.patternCount + '</span> patterns</div>' +
-        (on ? '<div class="pc-on">✓</div>' : '');
-    }, function (o) {
-      var c = C();
-      if (c.objId !== o.id) { c.objId = o.id; c.patternIds = o.patternIds.slice(); c.blocks = {}; }  // pre-select all
-      state.step = 4; redraw();
-    }));
+  /* Objectives — multi-select, grouped by persona, all in scope by default. */
+  function stepObjectives(body) {
+    var c = C(), roles = window.PIQ.roles();
+    if (!roles.length) { state.step = 2; return redraw(); }
+    var allObjIds = [];
+    roles.forEach(function (r) { (r.objectives || []).forEach(function (o) { allObjIds.push(o.id); }); });
+    body.appendChild(el("div", "st-q",
+      "Which <b>objectives</b> should the agents pursue?" +
+      '<button class="linkbtn" id="stAllO">' + (c.objIds.length === allObjIds.length ? "clear all" : "select all") + '</button>'));
+    body.appendChild(el("p", "st-hint",
+      "Objectives are grouped by persona. All are in scope by default; each maps to the KPI it moves and the patterns that deliver it."));
+    roles.forEach(function (r) {
+      body.appendChild(el("div", "obj-group-h", esc(r.name)));
+      body.appendChild(pickGrid(r.objectives, function (o) {
+        var on = c.objIds.indexOf(o.id) >= 0;
+        return '<div class="pc-main"><div class="pc-t">' + esc(o.name) + '</div>' +
+          '<div class="pc-d">Measured by <b>' + esc(o.kpi) + '</b></div></div>' +
+          '<div class="pc-meta"><span class="pc-n">' + o.patternCount + '</span> patterns</div>' +
+          (on ? '<div class="pc-on">✓</div>' : '');
+      }, function (o) { toggleObjective(o); redraw(); },
+         function (o) { return c.objIds.indexOf(o.id) >= 0; }));
+    });
+    var np = c.patternIds.length;
+    body.appendChild(nextBar(c.objIds.length + " objective" + (c.objIds.length !== 1 ? "s" : "") + " · " + np + " pattern" + (np !== 1 ? "s" : ""),
+      c.objIds.length ? "Review patterns →" : "", function () { state.step = 4; redraw(); }));
+    var all = document.getElementById("stAllO");
+    if (all) all.onclick = function (e) {
+      e.stopPropagation();
+      c.objIds = c.objIds.length === allObjIds.length ? [] : allObjIds.slice();
+      syncPatterns(); redraw();
+    };
+  }
+  function toggleObjective(o) {
+    var c = C(), i = c.objIds.indexOf(o.id);
+    if (i >= 0) c.objIds.splice(i, 1); else c.objIds.push(o.id);
+    syncPatterns();
   }
 
   function stepPatterns(body) {
-    var o = window.PIQ.objective(); if (!o) { state.step = 3; return redraw(); }
     var c = C();
-    var pats = o.patternIds.map(window.PIQ.pattern).filter(Boolean);
+    var ids = window.PIQ.objectivePatternIds(); if (!ids.length) { state.step = 3; return redraw(); }
+    var pats = ids.map(window.PIQ.pattern).filter(Boolean);
+    var p0 = proc();
     body.appendChild(el("div", "st-q",
-      "Select the <b>patterns</b> to deploy for “" + esc(o.name) + "”" +
+      "Select the <b>patterns</b> to deploy for “" + esc(p0 ? p0.name : "this process") + "”" +
       '<button class="linkbtn" id="stAll">' + (c.patternIds.length === pats.length ? "clear all" : "select all") + '</button>'));
     body.appendChild(el("p", "st-hint",
       "Each pattern encodes the analyst's judgement: a happy path (straight-through) plus a branching DAG that handles the variations. Pick the ones that match how your experts actually work."));

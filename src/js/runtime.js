@@ -80,10 +80,10 @@
   }
 
   function head() {
-    var f = window.PIQ.fn(), o = window.PIQ.objective();
+    var f = window.PIQ.fn(), p = window.PIQ.proc();
     return el("div", "rt-head",
       '<div><div class="kv">Stage 3 · Run & Govern — Agentic workflow in production</div>' +
-      '<h2>' + esc(f.name) + ' › ' + esc(o.name) + ' <span class="livedot">● LIVE</span></h2></div>' +
+      '<h2>' + esc(f.name) + ' › ' + esc((p || {}).name || "") + ' <span class="livedot">● LIVE</span></h2></div>' +
       '<div class="rt-ctrl">' +
         '<button class="btn go sm" id="rtStep">Process next ▸</button>' +
         '<button class="btn sm" id="rtAuto">Auto-run ⏵</button>' +

@@ -539,7 +539,49 @@ button{font-family:inherit;cursor:pointer}
 .pc-meta{font-size:12px;color:var(--muted);font-weight:600;display:flex;align-items:center;gap:8px}
 .pc-n{font-weight:800;color:var(--ink)}
 .pc-on{position:absolute;top:12px;right:14px;width:22px;height:22px;border-radius:50%;background:var(--act);color:#fff;display:grid;place-items:center;font-weight:800;font-size:12px}
-.pickcard:has(.pc-on){border-color:var(--act);box-shadow:0 0 0 2px #16a08533}
+.pickcard:has(.pc-on),.pickcard.sel{border-color:var(--act);box-shadow:0 0 0 2px #16a08533}
+.obj-group-h{font-size:12px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--brand2);
+  margin:18px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+.obj-group-h:first-of-type{margin-top:4px}
+
+/* process hierarchy tree (L1–L4) */
+.phier-wrap{margin:22px 0 6px;background:#fff;border:1px solid var(--line);border-radius:13px;padding:16px 18px;box-shadow:var(--shadow)}
+.st-subq{font-size:13px;font-weight:800;letter-spacing:.03em;text-transform:uppercase;color:var(--brand);margin:0 0 14px}
+.st-subq small{display:inline;text-transform:none;letter-spacing:0;font-weight:600;color:var(--muted);margin-left:8px}
+.phier .ph-children{margin-left:20px;padding-left:16px;border-left:2px solid var(--line)}
+.ph-branch{position:relative}
+.ph-node{position:relative;display:inline-flex;align-items:center;gap:9px;background:#f7f9fb;border:1px solid var(--line);
+  border-radius:9px;padding:6px 11px;margin:5px 0;font-size:13px}
+.ph-node .ph-lvl{font-size:9.5px;font-weight:800;letter-spacing:.03em;color:#fff;background:var(--muted);border-radius:5px;padding:2px 5px;flex-shrink:0}
+.ph-node.l1 .ph-lvl{background:var(--brand)}
+.ph-node.l2 .ph-lvl{background:var(--brand2)}
+.ph-node.l3 .ph-lvl{background:#8e44ad}
+.ph-node.l4 .ph-lvl{background:var(--act)}
+.ph-node .ph-ico{font-size:15px}
+.ph-node .ph-nm{font-weight:700;color:var(--ink)}
+.ph-node .ph-sub{color:var(--muted);font-weight:600;font-size:11.5px;margin-left:2px}
+.ph-node.l1{background:#eef5f6;border-color:var(--brand2)}
+.ph-node.persona{cursor:help}
+.ph-node.persona:hover{border-color:#8e44ad;box-shadow:0 0 0 2px #8e44ad22}
+
+/* persona detail card (hover) */
+.persona-pop{position:absolute;left:0;top:calc(100% + 6px);z-index:40;width:290px;display:none;
+  background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 15px;box-shadow:0 12px 34px rgba(15,32,45,.18)}
+.ph-node.persona:hover .persona-pop{display:block}
+.pp-h{font-size:14px;font-weight:800;color:var(--ink);margin-bottom:10px}
+.pp-lab{font-size:10px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin:0 0 6px}
+.pp-objs{list-style:none;margin:0 0 12px;padding:0}
+.pp-objs li{display:flex;justify-content:space-between;gap:10px;padding:4px 0;border-top:1px solid var(--line);font-size:12px}
+.pp-objs li:first-child{border-top:0}
+.pp-objs li b{font-weight:700;color:var(--ink)}
+.pp-objs li span{color:var(--muted);text-align:right;flex-shrink:0}
+.pp-stats{display:flex;gap:10px;margin-bottom:12px}
+.pp-stats div{flex:1;background:#f7f9fb;border:1px solid var(--line);border-radius:9px;padding:8px 10px;text-align:center}
+.pp-stats b{display:block;font-size:18px;font-weight:800;color:var(--brand)}
+.pp-stats span{font-size:10.5px;color:var(--muted);font-weight:600}
+.pp-mix .pp-bar{height:8px;border-radius:5px;background:#e0752e;overflow:hidden;margin-bottom:5px}
+.pp-mix .pp-bar i{display:block;height:100%;background:#16a085}
+.pp-mix span{font-size:11.5px;color:var(--muted);font-weight:600}
 
 /* pattern cards (step 5) */
 .patgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:14px}
