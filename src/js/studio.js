@@ -40,9 +40,56 @@
     root.innerHTML = "";
     root.appendChild(intro());
     root.appendChild(rail());
+    var wrap = el("div", "st-work");
     var body = el("div", "st-body");
-    root.appendChild(body);
+    wrap.appendChild(body);
+    var sum = summaryCard();
+    if (sum) wrap.appendChild(sum);
+    root.appendChild(wrap);
     drawStep(body);
+    if (window.PIQ.persistComposition) window.PIQ.persistComposition();
+  }
+
+  /* Composition workspace — the always-on recap of every selection so far.
+     Answers "what have I picked?" without leaving the current step. */
+  function summaryCard() {
+    var c = C(), f = window.PIQ.fn();
+    if (!f) return null;
+    var p = proc(), r = role(), o = window.PIQ.objective();
+    var pats = window.PIQ.selectedPatterns();
+
+    var rows = [
+      ["Function", f.name],
+      ["Process", p && p.name],
+      ["Role", r && r.name],
+      ["Objective", o && (o.name + " · " + o.kpi)]
+    ].filter(function (x) { return x[1]; }).map(function (x) {
+      return '<div class="sum-row"><span class="sum-k">' + x[0] + '</span>' +
+        '<span class="sum-v">' + esc(x[1]) + '</span></div>';
+    }).join("");
+
+    var patBlock = "";
+    if (pats.length) {
+      var chips = pats.map(function (pt) {
+        return '<span class="sum-chip">' + esc(pt.name) + (pt.sample ? ' <i>sample</i>' : '') + '</span>';
+      }).join("");
+      patBlock = '<div class="sum-row col"><span class="sum-k">Patterns <b>' + pats.length + '</b></span>' +
+        '<div class="sum-chips">' + chips + '</div></div>';
+    }
+
+    var blockRow = "";
+    var keys = Object.keys(c.blocks);
+    if (keys.length) {
+      var nConf = keys.filter(function (k) { return c.blocks[k].configured; }).length;
+      blockRow = '<div class="sum-row"><span class="sum-k">Action blocks</span>' +
+        '<span class="sum-v">' + nConf + ' / ' + keys.length + ' configured</span></div>';
+    }
+
+    var card = el("div", "st-summary",
+      '<div class="sum-h"><span>Composition workspace</span>' +
+      (c.live ? '<span class="cr-live">● LIVE</span>' : '') + '</div>' +
+      rows + patBlock + blockRow);
+    return card;
   }
 
   function intro() {
@@ -95,9 +142,16 @@
 
   /* ---------------- steps ---------------- */
   function drawStep(body) {
+    if (state.step > 0) body.appendChild(backBtn());
     [stepFunction, stepProcess, stepRole, stepObjective, stepPatterns, stepConfigure][state.step](body);
     var rb = document.getElementById("stReset");
     if (rb) rb.onclick = function () { window.PIQ.resetComposition(); state.step = 0; redraw(); };
+  }
+
+  function backBtn() {
+    var b = el("button", "btn ghost sm st-back", "← Back to " + STEPS[state.step - 1]);
+    b.onclick = function () { state.step = Math.max(0, state.step - 1); redraw(); };
+    return b;
   }
 
   function pickGrid(items, build, onPick) {

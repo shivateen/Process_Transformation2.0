@@ -506,6 +506,24 @@ button{font-family:inherit;cursor:pointer}
 .st-step.done .st-dot{background:var(--act);color:#fff}
 .st-step.on{background:#eef5f6}
 .st-sep{flex:1;height:2px;background:var(--line);min-width:14px;margin:0 2px}
+.st-back{margin:0 0 14px;color:var(--muted)}
+.st-back:hover{border-color:var(--brand2);color:var(--brand)}
+.st-work{display:grid;grid-template-columns:1fr 300px;gap:20px;align-items:start}
+@media(max-width:1080px){.st-work{grid-template-columns:1fr}}
+.st-summary{position:sticky;top:16px;background:#fff;border:1px solid var(--line);border-radius:13px;
+  padding:16px 16px;box-shadow:var(--shadow)}
+.st-summary .sum-h{display:flex;align-items:center;justify-content:space-between;font-size:12px;font-weight:800;
+  letter-spacing:.04em;text-transform:uppercase;color:var(--brand);margin:0 0 12px}
+.sum-row{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-top:1px solid var(--line);font-size:13px}
+.sum-row:first-of-type{border-top:0}
+.sum-row.col{flex-direction:column;gap:8px}
+.sum-k{color:var(--muted);font-weight:700;white-space:nowrap}
+.sum-k b{color:var(--brand2)}
+.sum-v{color:var(--ink);font-weight:650;text-align:right}
+.sum-chips{display:flex;flex-wrap:wrap;gap:6px}
+.sum-chip{font-size:11.5px;font-weight:650;background:#eef5f6;color:var(--ink);border:1px solid var(--line);
+  border-radius:999px;padding:3px 9px}
+.sum-chip i{color:var(--brand2);font-style:normal;font-size:10px}
 .st-q{font-size:18px;font-weight:750;letter-spacing:-.01em;margin:0 0 16px}
 .st-q b{color:var(--brand)}
 .st-hint{color:var(--muted);font-size:13px;margin:-8px 0 18px;max-width:760px}
