@@ -46,7 +46,8 @@
         { id: "runtime", label: "Live Operations" },
         { id: "cockpit", label: "Cognitive Cockpit" },
         { id: "governance", label: "Governance" },
-        { id: "roi", label: "ROI & Attribution" } ] },
+        { id: "roi", label: "ROI & Attribution" },
+        { id: "themes", label: "Executive Themes" } ] },
   ];
   PIQ.STAGES = STAGES;
 

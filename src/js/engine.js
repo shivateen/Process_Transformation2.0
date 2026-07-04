@@ -310,6 +310,71 @@
     };
   }
 
+  /* ---- Cross-process compound pattern correlator -------------------------
+   * Per-process patterns each live in one process. Some behaviours only appear
+   * when several patterns co-occur for the SAME entity within a window. We keep
+   * a per-entity firing history and check each compound rule against it.
+   * Called by the cockpit after running diagnose() on the full worklist.
+   * ----------------------------------------------------------------------*/
+  var _firingHistory = {}; // entityKey -> [{patternId, timestamp, confidence}]
+
+  function recordFiring(entityKey, patternId, confidence) {
+    if (!_firingHistory[entityKey]) _firingHistory[entityKey] = [];
+    _firingHistory[entityKey].push({
+      patternId: patternId,
+      timestamp: Date.now(),
+      confidence: confidence
+    });
+  }
+
+  function correlate(entityKey, compounds, now) {
+    // For each compound pattern, check if this entity's firing history
+    // satisfies the compound rule within the time window.
+    // Returns array of {compound, matchedComponents[], confidence}
+    now = now || Date.now();
+    var history = _firingHistory[entityKey] || [];
+    var signals = [];
+
+    (compounds || []).forEach(function (cp) {
+      var windowMs = (cp.windowDays || 90) * 86400000;
+      var recent = history.filter(function (h) {
+        return (now - h.timestamp) <= windowMs;
+      });
+      var recentIds = recent.map(function (h) { return h.patternId; });
+
+      var matched = cp.componentPatternIds.filter(function (id) {
+        return recentIds.indexOf(id) >= 0;
+      });
+
+      var required;
+      if (cp.logic === "ALL") {
+        required = cp.componentPatternIds.length;
+      } else if (cp.logic && cp.logic.min) {
+        required = cp.logic.min;
+      } else {
+        required = cp.componentPatternIds.length;
+      }
+
+      if (matched.length >= required) {
+        var avgConf = recent.filter(function (h) {
+          return matched.indexOf(h.patternId) >= 0;
+        }).reduce(function (sum, h) { return sum + h.confidence; }, 0) / matched.length;
+
+        signals.push({
+          compound: cp,
+          matchedComponentIds: matched,
+          totalComponents: cp.componentPatternIds.length,
+          confidence: clamp(avgConf * 1.1), // compound signal boosts confidence
+          severity: cp.severity
+        });
+      }
+    });
+
+    return signals;
+  }
+
+  function resetFiringHistory() { _firingHistory = {}; }
+
   global.ProcessIQEngine = {
     run: run,
     diagnose: diagnose,
@@ -317,6 +382,9 @@
     buildActionDAG: buildActionDAG,
     detectors: DETECTORS,
     classifyAction: classifyAction,
+    correlate: correlate,
+    recordFiring: recordFiring,
+    resetFiringHistory: resetFiringHistory,
     _money: money, _pct: pct,
   };
 })(typeof window !== "undefined" ? window : this);

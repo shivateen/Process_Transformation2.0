@@ -14,6 +14,7 @@
   --brand:#2a2420; --brand2:#d3600f; --accent:#f47a1e;
   --crit:#c0392b; --high:#e67e22; --med:#27ae60; --low:#2980b9;
   --sense:#2980b9; --diag:#8e44ad; --decide:#d68910; --act:#16a085;
+  --alert:#c0392b; --card-bg:#ffffff; --border:#e7e1d6;
   --shadow:0 1px 3px rgba(38,28,18,.09),0 8px 24px rgba(38,28,18,.07);
   --radius:14px; --mono:'SFMono-Regular',ui-monospace,'Cascadia Code',Consolas,monospace;
 }
@@ -922,6 +923,68 @@ button{font-family:inherit;cursor:pointer}
 .dadd-opt:hover{border-color:var(--brand2);background:#fdf7f0;color:var(--brand2)}
 .dadd-opt.custom{font-family:inherit;font-weight:700;color:var(--brand2);border-color:#f3cfa8;background:#fbecdd}
 .dadd-none{font-size:11px;color:var(--muted);font-style:italic;padding:2px}
+
+/* ===================================================================== */
+/* Cross-Process Compound Patterns (collective intelligence)             */
+/* ===================================================================== */
+.compound-band{margin:0 0 18px}
+.cb-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 12px}
+.cb-title{font-size:15px;font-weight:800;color:var(--alert)}
+.cb-count{background:var(--alert);color:#fff;border-radius:999px;font-size:12px;font-weight:800;padding:1px 9px}
+.cb-sub{font-size:12px;color:var(--muted);flex:1;min-width:220px}
+.compound-alert{border:2px solid var(--alert);border-radius:8px;padding:16px;margin-bottom:16px;background:#fff5f5}
+.compound-alert .ca-title{font-size:16px;font-weight:700;color:var(--alert)}
+.compound-alert .ca-components{margin:8px 0}
+.compound-alert .ca-component{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;background:#fee;border-radius:4px;font-size:12px;margin:2px}
+/* --- richer states layered on top of the base spec --- */
+.compound-alert.sev-high{border-color:#e67e22;background:#fff8f1}
+.compound-alert.sev-high .ca-title{color:#c0630f}
+.compound-alert.sev-medium{border-color:#d6a010;background:#fffaf0}
+.compound-alert.sev-medium .ca-title{color:#a06c00}
+.ca-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.ca-sev{font-size:10px;font-weight:800;letter-spacing:.04em;padding:2px 8px;border-radius:5px;color:#fff;background:var(--alert)}
+.ca-sev.high{background:#e67e22}.ca-sev.medium{background:#d6a010}
+.ca-meta{font-size:12px;color:var(--muted);margin:4px 0 8px}
+.ca-meta b{color:var(--ink)}
+.ca-desc{font-size:13px;color:var(--ink);line-height:1.5;margin-bottom:4px}
+.compound-alert .ca-component{color:#8a2b22;font-weight:600;opacity:.62}
+.compound-alert .ca-component.matched{opacity:1;background:#fdd;border:1px solid #f3b6ae}
+.compound-alert .ca-component.link{cursor:pointer;text-decoration:underline dotted}
+.compound-alert .ca-component.link:hover{background:#fbc9c1}
+.ca-rec{font-size:12.5px;color:var(--ink);line-height:1.5;margin:6px 0 10px}
+.ca-rec b{color:var(--alert)}
+.ca-foot{display:flex;flex-wrap:wrap;gap:14px;align-items:center;border-top:1px dashed #f0c9c2;padding-top:9px}
+.ca-exposure{font-size:13px;font-weight:800;color:var(--alert)}
+.ca-kpi{font-size:11.5px;color:var(--muted);font-weight:600}
+
+/* ===================================================================== */
+/* Executive Theme Layer (KPI rollup)                                    */
+/* ===================================================================== */
+.theme-card{background:var(--card-bg);border:1px solid var(--border);border-radius:8px;padding:20px;margin-bottom:16px;box-shadow:var(--shadow)}
+.theme-card .theme-name{font-size:18px;font-weight:700;display:flex;align-items:center;gap:8px}
+.theme-card .theme-q{color:var(--muted);font-style:italic;margin:4px 0 12px;font-size:14px}
+.theme-kpi{display:flex;align-items:baseline;gap:12px;margin:8px 0;flex-wrap:wrap}
+.theme-kpi .kpi-val{font-size:28px;font-weight:800;font-variant-numeric:tabular-nums}
+.theme-kpi .kpi-delta{font-size:14px;padding:2px 8px;border-radius:4px}
+.theme-kpi .kpi-delta.good{background:#e8f5e9;color:#2e7d32}
+.theme-kpi .kpi-delta.bad{background:#fdecea;color:#c0392b}
+.theme-components{margin-top:12px;border-top:1px solid var(--border);padding-top:12px}
+.theme-comp-row{display:flex;align-items:center;gap:8px;padding:6px 0;font-size:13px;flex-wrap:wrap}
+.theme-comp-fn{min-width:120px;font-weight:600}
+.theme-comp-bar{flex:1;min-width:120px;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.theme-comp-fill{height:100%;border-radius:3px}
+.theme-patterns{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
+.theme-pat-pill{font-size:11px;padding:2px 8px;border-radius:10px;background:#f0f0f0;cursor:pointer;transition:.12s}
+.theme-pat-pill:hover{background:var(--brand2);color:#fff}
+/* theme view chrome */
+.themes-head{margin-bottom:16px}
+.theme-icon{width:30px;height:30px;border-radius:8px;display:inline-grid;place-items:center;background:#faf2e8;color:var(--brand2);font-weight:800}
+.theme-kpi-name{font-size:13px;font-weight:700;color:var(--muted);width:100%}
+.theme-formula{font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+.theme-comp-val{font-variant-numeric:tabular-nums;color:var(--muted);font-size:12px;min-width:96px;text-align:right}
+.theme-impact{margin-top:12px;font-size:13px}
+.theme-impact b{color:var(--act);font-size:16px}
+.theme-toggle{background:none;border:0;color:var(--brand2);font-weight:700;font-size:12px;cursor:pointer;text-decoration:underline;padding:0}
 
 </style>
 </head>
@@ -3631,7 +3694,9 @@ button{font-family:inherit;cursor:pointer}
       "before": 45,
       "after": 35,
       "better": "down",
-      "note": "Days Sales Outstanding"
+      "note": "Days Sales Outstanding",
+      "functionId": "o2c",
+      "themeId": "working-capital"
     },
     {
       "name": "CEI",
@@ -3639,7 +3704,9 @@ button{font-family:inherit;cursor:pointer}
       "before": 72,
       "after": 90,
       "better": "up",
-      "note": "Collection Effectiveness Index"
+      "note": "Collection Effectiveness Index",
+      "functionId": "o2c",
+      "themeId": "revenue-assurance"
     },
     {
       "name": "Auto-Match",
@@ -3647,7 +3714,9 @@ button{font-family:inherit;cursor:pointer}
       "before": 35,
       "after": 85,
       "better": "up",
-      "note": "Cash auto-applied"
+      "note": "Cash auto-applied",
+      "functionId": "o2c",
+      "themeId": "process-efficiency"
     },
     {
       "name": "Dispute Cycle",
@@ -3655,7 +3724,9 @@ button{font-family:inherit;cursor:pointer}
       "before": 25,
       "after": 12,
       "better": "down",
-      "note": "Time to resolve"
+      "note": "Time to resolve",
+      "functionId": "o2c",
+      "themeId": "revenue-assurance"
     },
     {
       "name": "Deduction Auto",
@@ -3664,7 +3735,9 @@ button{font-family:inherit;cursor:pointer}
       "after": 40,
       "better": "up",
       "note": "Auto-dispositioned",
-      "isNew": true
+      "isNew": true,
+      "functionId": "o2c",
+      "themeId": "process-efficiency"
     }
   ],
   "outcomes": [
@@ -3727,7 +3800,9 @@ button{font-family:inherit;cursor:pointer}
       "featureSlug": "min-viable-payment",
       "priority": "Critical",
       "recovery": 1131000.0,
-      "customers": 13
+      "customers": 13,
+      "functionId": "o2c",
+      "themeId": "customer-risk"
     },
     {
       "patternId": 19,
@@ -3736,7 +3811,9 @@ button{font-family:inherit;cursor:pointer}
       "featureSlug": "credit-limit-velocity",
       "priority": "Critical",
       "recovery": 907000.0,
-      "customers": 8
+      "customers": 8,
+      "functionId": "o2c",
+      "themeId": "customer-risk"
     },
     {
       "patternId": 22,
@@ -3745,7 +3822,9 @@ button{font-family:inherit;cursor:pointer}
       "featureSlug": "score-vs-dso-delta",
       "priority": "Critical",
       "recovery": 768000.0,
-      "customers": 13
+      "customers": 13,
+      "functionId": "o2c",
+      "themeId": "customer-risk"
     },
     {
       "patternId": 10,
@@ -3754,7 +3833,9 @@ button{font-family:inherit;cursor:pointer}
       "featureSlug": "po-mismatch-flag",
       "priority": "High",
       "recovery": 627000.0,
-      "customers": 7
+      "customers": 7,
+      "functionId": "o2c",
+      "themeId": "working-capital"
     },
     {
       "patternId": 11,
@@ -3763,7 +3844,9 @@ button{font-family:inherit;cursor:pointer}
       "featureSlug": "contact-shift-frequency",
       "priority": "High",
       "recovery": 624000.0,
-      "customers": 6
+      "customers": 6,
+      "functionId": "o2c",
+      "themeId": "working-capital"
     },
     {
       "patternId": 29,
@@ -3772,7 +3855,9 @@ button{font-family:inherit;cursor:pointer}
       "featureSlug": "sales-override-freq",
       "priority": "High",
       "recovery": 614000.0,
-      "customers": 6
+      "customers": 6,
+      "functionId": "o2c",
+      "themeId": "revenue-assurance"
     },
     {
       "patternId": 25,
@@ -3781,7 +3866,9 @@ button{font-family:inherit;cursor:pointer}
       "featureSlug": "refund-velocity",
       "priority": "High",
       "recovery": 603000.0,
-      "customers": 7
+      "customers": 7,
+      "functionId": "o2c",
+      "themeId": "process-efficiency"
     },
     {
       "patternId": 3,
@@ -3790,7 +3877,9 @@ button{font-family:inherit;cursor:pointer}
       "featureSlug": "volume-vs-threshold",
       "priority": "High",
       "recovery": 552000.0,
-      "customers": 6
+      "customers": 6,
+      "functionId": "o2c",
+      "themeId": "revenue-assurance"
     },
     {
       "patternId": 8,
@@ -3799,7 +3888,9 @@ button{font-family:inherit;cursor:pointer}
       "featureSlug": "rma-velocity-eom",
       "priority": "High",
       "recovery": 539000.0,
-      "customers": 6
+      "customers": 6,
+      "functionId": "o2c",
+      "themeId": "revenue-assurance"
     },
     {
       "patternId": 4,
@@ -3808,7 +3899,9 @@ button{font-family:inherit;cursor:pointer}
       "featureSlug": "micro-deduction-density",
       "priority": "High",
       "recovery": 523000.0,
-      "customers": 7
+      "customers": 7,
+      "functionId": "o2c",
+      "themeId": "revenue-assurance"
     },
     {
       "patternId": null,
@@ -3818,7 +3911,9 @@ button{font-family:inherit;cursor:pointer}
       "priority": null,
       "recovery": 1512000.0,
       "customers": 45,
-      "isOther": true
+      "isOther": true,
+      "functionId": "o2c",
+      "themeId": null
     }
   ]
 };</script>
@@ -9771,6 +9866,438 @@ button{font-family:inherit;cursor:pointer}
     }
   }
 };</script>
+<script>window.PROCESSIQ_COMPOUNDS = {
+  "meta": {
+    "title": "ProcessIQ — Cross-Process Compound Patterns",
+    "note": "Collective intelligence layer. Each compound fires when specific per-process patterns co-occur for the same entity.",
+    "compoundCount": 8
+  },
+  "compounds": [
+    {
+      "id": "CP-001",
+      "name": "Bust-Out Fraud Setup",
+      "severity": "critical",
+      "description": "Customer simultaneously gaming dispute timing (Collections), requesting duplicate refunds (Cash App), and showing credit deterioration (Credit) — the classic bust-out precursor. No single process sees all three.",
+      "componentPatternIds": [
+        1,
+        22,
+        25
+      ],
+      "logic": "ALL",
+      "windowDays": 90,
+      "entityKey": "KUNNR",
+      "themeId": "customer-risk",
+      "recommendation": "Immediate credit hold + joint review by Collections, Credit, and Cash App teams. Do not process any refunds until the investigation completes.",
+      "kpiImpact": [
+        "DSO",
+        "Bad Debt"
+      ],
+      "estimatedExposure": 2500000
+    },
+    {
+      "id": "CP-002",
+      "name": "Systematic Revenue Leakage",
+      "severity": "high",
+      "description": "Dispute splitting, Friday-afternoon slicing, and month-end RMA dumps recurring for the same account — deductions engineered to slip through under review thresholds and close-day noise.",
+      "componentPatternIds": [
+        3,
+        4,
+        8
+      ],
+      "logic": {
+        "min": 2,
+        "of": 3
+      },
+      "windowDays": 60,
+      "entityKey": "KUNNR",
+      "themeId": "revenue-leakage",
+      "recommendation": "Consolidate the account's deductions into a single dispute case, freeze auto-approval below threshold, and require substantiation before any credit memo posts.",
+      "kpiImpact": [
+        "Deduction Auto",
+        "Dispute Cycle"
+      ],
+      "estimatedExposure": 1400000
+    },
+    {
+      "id": "CP-003",
+      "name": "Credit Deterioration Cascade",
+      "severity": "critical",
+      "description": "Bust-out precursor velocity, partial breadcrumb payments, and a bureau downgrade stacking up over a quarter — three independent credit-risk tells converging on the same customer.",
+      "componentPatternIds": [
+        19,
+        20,
+        22
+      ],
+      "logic": {
+        "min": 2,
+        "of": 3
+      },
+      "windowDays": 120,
+      "entityKey": "KUNNR",
+      "themeId": "customer-risk",
+      "recommendation": "Re-underwrite the account: reduce the credit limit, move to prepay/COD on new orders, and route open AR to priority collections before exposure grows.",
+      "kpiImpact": [
+        "Bad Debt",
+        "DSO"
+      ],
+      "estimatedExposure": 1900000
+    },
+    {
+      "id": "CP-004",
+      "name": "Stalling-to-Write-Off Pipeline",
+      "severity": "high",
+      "description": "Missing-PO traps, approval musical chairs, a system-migration stall, and portal sabotage chained across half a year — an aging campaign engineered to run the invoice to write-off.",
+      "componentPatternIds": [
+        10,
+        11,
+        12,
+        14
+      ],
+      "logic": {
+        "min": 3,
+        "of": 4
+      },
+      "windowDays": 180,
+      "entityKey": "KUNNR",
+      "themeId": "collections-efficiency",
+      "recommendation": "Escalate to the account owner and legal watch-list; set a hard resolution SLA, disable further stalling loops, and stop the clock before the balance reaches write-off age.",
+      "kpiImpact": [
+        "DSO",
+        "Bad Debt"
+      ],
+      "estimatedExposure": 1100000
+    },
+    {
+      "id": "CP-005",
+      "name": "Cash Application Warfare",
+      "severity": "high",
+      "description": "Duplicate-payment bait, unapplied-cash weaponization, and remittance decoupling hitting the cash-application queue together — a deliberate assault on match rates and float.",
+      "componentPatternIds": [
+        24,
+        25,
+        26
+      ],
+      "logic": {
+        "min": 2,
+        "of": 3
+      },
+      "windowDays": 45,
+      "entityKey": "KUNNR",
+      "themeId": "cash-application",
+      "recommendation": "Quarantine the customer's incoming payments for manual application, reconcile remittances against open items before posting, and claw back any duplicate refunds.",
+      "kpiImpact": [
+        "Auto-Match",
+        "DSO"
+      ],
+      "estimatedExposure": 900000
+    },
+    {
+      "id": "CP-006",
+      "name": "Deduction-Dispute Double Play",
+      "severity": "medium",
+      "description": "Dispute splitting and Friday slicing on the deduction side, paired with duplicate-payment bait on the cash side — the same customer working both the dispute queue and the cash-app queue at once.",
+      "componentPatternIds": [
+        3,
+        4,
+        25
+      ],
+      "logic": "ALL",
+      "windowDays": 60,
+      "entityKey": "KUNNR",
+      "themeId": "revenue-leakage",
+      "recommendation": "Cross-link the deduction and cash-application cases, hold refunds pending dispute resolution, and flag the account for coordinated behaviour review.",
+      "kpiImpact": [
+        "Deduction Auto",
+        "Auto-Match"
+      ],
+      "estimatedExposure": 700000
+    },
+    {
+      "id": "CP-007",
+      "name": "Strategic Account Exploitation",
+      "severity": "high",
+      "description": "A strategic account using relationship shielding, 29th-day dispute timing, and partial breadcrumb payments — leveraging its importance to stretch terms with impunity.",
+      "componentPatternIds": [
+        29,
+        1,
+        20
+      ],
+      "logic": {
+        "min": 2,
+        "of": 3
+      },
+      "windowDays": 90,
+      "entityKey": "KUNNR",
+      "themeId": "customer-risk",
+      "recommendation": "Elevate to the account executive and CFO sponsor: renegotiate terms, cap shielding, and make continued strategic pricing contingent on payment behaviour.",
+      "kpiImpact": [
+        "DSO",
+        "CEI"
+      ],
+      "estimatedExposure": 1600000
+    },
+    {
+      "id": "CP-008",
+      "name": "Coordinated Payment Avoidance",
+      "severity": "medium",
+      "description": "A legal-entity shell game, portal sabotage, and partial breadcrumb payments moving in lock-step — a coordinated effort to make paying on time structurally impossible.",
+      "componentPatternIds": [
+        13,
+        14,
+        20
+      ],
+      "logic": "ALL",
+      "windowDays": 120,
+      "entityKey": "KUNNR",
+      "themeId": "collections-efficiency",
+      "recommendation": "Verify the paying legal entity, restore a working payment channel, and require a firm promise-to-pay with milestone tracking before extending further credit.",
+      "kpiImpact": [
+        "DSO",
+        "CEI"
+      ],
+      "estimatedExposure": 850000
+    }
+  ]
+};</script>
+<script>window.PROCESSIQ_THEMES = {
+  "meta": {
+    "title": "ProcessIQ — Executive Theme Layer",
+    "note": "CFO-level outcome themes that roll up KPIs across functions and link to driving patterns.",
+    "themeCount": 4
+  },
+  "themes": [
+    {
+      "id": "working-capital",
+      "name": "Working Capital Optimization",
+      "icon": "$",
+      "executiveQuestion": "How much cash is trapped in the receivables cycle?",
+      "annualImpact": 4200000,
+      "themeKPIs": [
+        {
+          "id": "ccc",
+          "name": "Cash Conversion Cycle",
+          "formula": "DSO + DIO − DPO",
+          "unit": "days",
+          "method": "signed",
+          "components": [
+            {
+              "kpiId": "DSO",
+              "functionId": "o2c",
+              "functionName": "Order-to-Cash",
+              "direction": "down",
+              "sign": 1,
+              "weight": 0.4,
+              "before": 45,
+              "after": 35
+            },
+            {
+              "kpiId": "DIO",
+              "functionId": "sc",
+              "functionName": "Supply Chain",
+              "direction": "down",
+              "sign": 1,
+              "weight": 0.3,
+              "before": 62,
+              "after": 55
+            },
+            {
+              "kpiId": "DPO",
+              "functionId": "p2p",
+              "functionName": "Procure-to-Pay",
+              "direction": "up",
+              "sign": -1,
+              "weight": 0.3,
+              "before": 38,
+              "after": 45
+            }
+          ],
+          "patternContributors": [
+            1,
+            17,
+            20,
+            27,
+            30,
+            31
+          ],
+          "compositeBefore": 69,
+          "compositeAfter": 45
+        }
+      ]
+    },
+    {
+      "id": "revenue-assurance",
+      "name": "Revenue Assurance",
+      "icon": "⊘",
+      "executiveQuestion": "How much revenue are we leaking to disputes and deductions?",
+      "annualImpact": 2100000,
+      "themeKPIs": [
+        {
+          "id": "nrr",
+          "name": "Net Revenue Retention",
+          "formula": "Weighted(CEI, Dispute Win Rate, Deduction Recovery)",
+          "unit": "%",
+          "method": "weighted",
+          "components": [
+            {
+              "kpiId": "CEI",
+              "functionId": "o2c",
+              "functionName": "Order-to-Cash",
+              "direction": "up",
+              "sign": 1,
+              "weight": 0.4,
+              "before": 72,
+              "after": 90
+            },
+            {
+              "kpiId": "Dispute Win Rate",
+              "functionId": "o2c",
+              "functionName": "Order-to-Cash",
+              "direction": "up",
+              "sign": 1,
+              "weight": 0.3,
+              "before": 58,
+              "after": 80
+            },
+            {
+              "kpiId": "Deduction Recovery",
+              "functionId": "o2c",
+              "functionName": "Order-to-Cash",
+              "direction": "up",
+              "sign": 1,
+              "weight": 0.3,
+              "before": 40,
+              "after": 72
+            }
+          ],
+          "patternContributors": [
+            3,
+            4,
+            5,
+            7,
+            8,
+            28
+          ],
+          "compositeBefore": 58,
+          "compositeAfter": 82
+        }
+      ]
+    },
+    {
+      "id": "customer-risk",
+      "name": "Customer Risk Exposure",
+      "icon": "⚠",
+      "executiveQuestion": "What's our concentration risk across the customer base?",
+      "annualImpact": 1900000,
+      "themeKPIs": [
+        {
+          "id": "wrs",
+          "name": "Weighted Risk Score",
+          "formula": "Weighted(Credit Score, Payment Behavior, Dispute Frequency)",
+          "unit": "index",
+          "method": "weighted",
+          "components": [
+            {
+              "kpiId": "Credit Score Risk",
+              "functionId": "o2c",
+              "functionName": "Credit & Risk (O2C)",
+              "direction": "down",
+              "sign": 1,
+              "weight": 0.4,
+              "before": 62,
+              "after": 45
+            },
+            {
+              "kpiId": "Payment Behavior",
+              "functionId": "o2c",
+              "functionName": "Collections (O2C)",
+              "direction": "down",
+              "sign": 1,
+              "weight": 0.35,
+              "before": 55,
+              "after": 38
+            },
+            {
+              "kpiId": "Dispute Frequency",
+              "functionId": "o2c",
+              "functionName": "Disputes (O2C)",
+              "direction": "down",
+              "sign": 1,
+              "weight": 0.25,
+              "before": 48,
+              "after": 30
+            }
+          ],
+          "patternContributors": [
+            19,
+            20,
+            21,
+            22,
+            23
+          ],
+          "compositeBefore": 56,
+          "compositeAfter": 39
+        }
+      ]
+    },
+    {
+      "id": "process-efficiency",
+      "name": "Process Efficiency",
+      "icon": "⚡",
+      "executiveQuestion": "Are we scaling with automation or staffing with headcount?",
+      "annualImpact": 1500000,
+      "themeKPIs": [
+        {
+          "id": "touchless",
+          "name": "Touchless Rate",
+          "formula": "Weighted(Auto-Match, Auto-Deduction, STP Rate)",
+          "unit": "%",
+          "method": "weighted",
+          "components": [
+            {
+              "kpiId": "Auto-Match",
+              "functionId": "o2c",
+              "functionName": "Cash Application (O2C)",
+              "direction": "up",
+              "sign": 1,
+              "weight": 0.4,
+              "before": 35,
+              "after": 85
+            },
+            {
+              "kpiId": "Auto-Deduction",
+              "functionId": "o2c",
+              "functionName": "Deductions (O2C)",
+              "direction": "up",
+              "sign": 1,
+              "weight": 0.3,
+              "before": 0,
+              "after": 40
+            },
+            {
+              "kpiId": "STP Rate",
+              "functionId": "o2c",
+              "functionName": "Order-to-Cash",
+              "direction": "up",
+              "sign": 1,
+              "weight": 0.3,
+              "before": 48,
+              "after": 82
+            }
+          ],
+          "patternContributors": [
+            24,
+            25,
+            26,
+            6,
+            9
+          ],
+          "compositeBefore": 28,
+          "compositeAfter": 71
+        }
+      ]
+    }
+  ]
+};</script>
 <script>
 /* ============================================================================
  * ProcessIQ — Cognitive Engine
@@ -10084,6 +10611,71 @@ button{font-family:inherit;cursor:pointer}
     };
   }
 
+  /* ---- Cross-process compound pattern correlator -------------------------
+   * Per-process patterns each live in one process. Some behaviours only appear
+   * when several patterns co-occur for the SAME entity within a window. We keep
+   * a per-entity firing history and check each compound rule against it.
+   * Called by the cockpit after running diagnose() on the full worklist.
+   * ----------------------------------------------------------------------*/
+  var _firingHistory = {}; // entityKey -> [{patternId, timestamp, confidence}]
+
+  function recordFiring(entityKey, patternId, confidence) {
+    if (!_firingHistory[entityKey]) _firingHistory[entityKey] = [];
+    _firingHistory[entityKey].push({
+      patternId: patternId,
+      timestamp: Date.now(),
+      confidence: confidence
+    });
+  }
+
+  function correlate(entityKey, compounds, now) {
+    // For each compound pattern, check if this entity's firing history
+    // satisfies the compound rule within the time window.
+    // Returns array of {compound, matchedComponents[], confidence}
+    now = now || Date.now();
+    var history = _firingHistory[entityKey] || [];
+    var signals = [];
+
+    (compounds || []).forEach(function (cp) {
+      var windowMs = (cp.windowDays || 90) * 86400000;
+      var recent = history.filter(function (h) {
+        return (now - h.timestamp) <= windowMs;
+      });
+      var recentIds = recent.map(function (h) { return h.patternId; });
+
+      var matched = cp.componentPatternIds.filter(function (id) {
+        return recentIds.indexOf(id) >= 0;
+      });
+
+      var required;
+      if (cp.logic === "ALL") {
+        required = cp.componentPatternIds.length;
+      } else if (cp.logic && cp.logic.min) {
+        required = cp.logic.min;
+      } else {
+        required = cp.componentPatternIds.length;
+      }
+
+      if (matched.length >= required) {
+        var avgConf = recent.filter(function (h) {
+          return matched.indexOf(h.patternId) >= 0;
+        }).reduce(function (sum, h) { return sum + h.confidence; }, 0) / matched.length;
+
+        signals.push({
+          compound: cp,
+          matchedComponentIds: matched,
+          totalComponents: cp.componentPatternIds.length,
+          confidence: clamp(avgConf * 1.1), // compound signal boosts confidence
+          severity: cp.severity
+        });
+      }
+    });
+
+    return signals;
+  }
+
+  function resetFiringHistory() { _firingHistory = {}; }
+
   global.ProcessIQEngine = {
     run: run,
     diagnose: diagnose,
@@ -10091,6 +10683,9 @@ button{font-family:inherit;cursor:pointer}
     buildActionDAG: buildActionDAG,
     detectors: DETECTORS,
     classifyAction: classifyAction,
+    correlate: correlate,
+    recordFiring: recordFiring,
+    resetFiringHistory: resetFiringHistory,
     _money: money, _pct: pct,
   };
 })(typeof window !== "undefined" ? window : this);
@@ -10145,7 +10740,8 @@ button{font-family:inherit;cursor:pointer}
         { id: "runtime", label: "Live Operations" },
         { id: "cockpit", label: "Cognitive Cockpit" },
         { id: "governance", label: "Governance" },
-        { id: "roi", label: "ROI & Attribution" } ] },
+        { id: "roi", label: "ROI & Attribution" },
+        { id: "themes", label: "Executive Themes" } ] },
   ];
   PIQ.STAGES = STAGES;
 
@@ -12041,6 +12637,107 @@ button{font-family:inherit;cursor:pointer}
   }
   function escapeHtml(s) { return (s == null ? "" : String(s)).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
 
+  /* ---------- Cross-process compound signals (collective intelligence) ----------
+   * After the worklist runs the engine on every invoice, we record each fired
+   * pattern into the engine's per-entity firing history (keyed by customer), then
+   * correlate that history against the compound rules. Compounds surface behaviour
+   * no single process sees. Rendered as red alert cards above the worklist. */
+  var compounds = (window.PROCESSIQ_COMPOUNDS && window.PROCESSIQ_COMPOUNDS.compounds) || [];
+
+  // Deterministic demo history: the same accounts exhibited these patterns in OTHER
+  // processes (Cash App, Credit) earlier in the window. The collections worklist is
+  // only one process, so without this the cross-process layer has nothing to cross.
+  var PRIOR_FIRINGS = [
+    { cust: "Halberd Industrial Group", pid: 22, conf: 0.88 },   // + #1 (worklist) → CP-001
+    { cust: "Halberd Industrial Group", pid: 25, conf: 0.84 },
+    { cust: "Quanta Semiconductors", pid: 20, conf: 0.82 },      // + #19 (worklist) → CP-003
+    { cust: "Quanta Semiconductors", pid: 22, conf: 0.79 },
+    { cust: "Crestfall Retail Holdings", pid: 4, conf: 0.80 },   // + #3 (worklist) → CP-002
+    { cust: "Vanta Pharma Distribution", pid: 1, conf: 0.83 },   // + #20 (worklist) → CP-007
+  ];
+
+  function patternById(id) { return patterns.filter(function (p) { return p.id === id; })[0]; }
+
+  // Build the firing history from the worklist (+ demo priors), then correlate.
+  function scanCompounds() {
+    if (!E.correlate || !compounds.length) return [];
+    E.resetFiringHistory();
+    var evidence = {};   // customer -> [{patternId, invoice}]  (invoice=null for priors)
+    function addEvidence(cust, pid, iv) { (evidence[cust] = evidence[cust] || []).push({ patternId: pid, invoice: iv }); }
+
+    // (1) real firings from the current worklist
+    book.invoices.forEach(function (iv) {
+      var d = E.run(iv, patterns).diagnosis;
+      if (d.fired && d.top && d.top.pattern) {
+        E.recordFiring(iv.customer, d.top.pattern.id, d.confidence);
+        addEvidence(iv.customer, d.top.pattern.id, iv);
+      }
+    });
+    // (2) synthetic prior cross-process firings (demo)
+    PRIOR_FIRINGS.forEach(function (s) {
+      E.recordFiring(s.cust, s.pid, s.conf);
+      addEvidence(s.cust, s.pid, null);
+    });
+    // (3) correlate per unique customer
+    var seen = {}, signals = [];
+    book.invoices.forEach(function (iv) {
+      if (seen[iv.customer]) return; seen[iv.customer] = 1;
+      E.correlate(iv.customer, compounds).forEach(function (sig) {
+        signals.push({ customer: iv.customer, sig: sig, evidence: evidence[iv.customer] || [] });
+      });
+    });
+    // most severe first
+    var rank = { critical: 0, high: 1, medium: 2, low: 3 };
+    function rk(s) { return s.sig.severity in rank ? rank[s.sig.severity] : 9; }
+    signals.sort(function (a, b) { return rk(a) - rk(b); });
+    return signals;
+  }
+
+  function renderCompoundSection() {
+    var signals = scanCompounds();
+    if (!signals.length) return "";
+    return '<div class="compound-band"><div class="cb-head">' +
+      '<span class="cb-title">⚠ Cross-Process Compound Signals</span>' +
+      '<span class="cb-count">' + signals.length + '</span>' +
+      '<span class="cb-sub">Collective intelligence — behaviour no single process sees, correlated across Collections, Credit &amp; Cash App for the same customer.</span>' +
+      '</div>' + signals.map(compoundCard).join("") + '</div>';
+  }
+
+  function compoundCard(s) {
+    var cp = s.sig.compound, matched = s.sig.matchedComponentIds;
+    var comps = cp.componentPatternIds.map(function (pid) {
+      var p = patternById(pid);
+      var isM = matched.indexOf(pid) >= 0;
+      var ev = (s.evidence || []).filter(function (e) { return e.patternId === pid; })[0];
+      var clickable = !!(ev && ev.invoice);
+      return '<span class="ca-component' + (isM ? " matched" : "") + (clickable ? " link" : "") + '"' +
+        (clickable ? ' data-belnr="' + ev.invoice.belnr + '" title="Open the invoice evidence"' : ' title="' + (isM ? "Prior signal from another process" : "Not yet fired") + '"') + '>' +
+        (isM ? "● " : "○ ") + "#" + pid + " " + escapeHtml(p ? p.name : "Pattern " + pid) + '</span>';
+    }).join("");
+    return '<div class="compound-alert sev-' + escapeHtml(cp.severity) + '">' +
+      '<div class="ca-head"><span class="ca-title">' + escapeHtml(cp.name) + '</span>' +
+      '<span class="ca-sev ' + escapeHtml(cp.severity) + '">' + escapeHtml(cp.severity.toUpperCase()) + '</span></div>' +
+      '<div class="ca-meta"><b>' + escapeHtml(s.customer) + '</b> · ' + matched.length + ' of ' +
+      cp.componentPatternIds.length + ' patterns · ' + (s.sig.confidence * 100 | 0) + '% confidence · ' +
+      cp.windowDays + 'd window</div>' +
+      '<div class="ca-desc">' + escapeHtml(cp.description) + '</div>' +
+      '<div class="ca-components">' + comps + '</div>' +
+      '<div class="ca-rec"><b>Recommendation.</b> ' + escapeHtml(cp.recommendation) + '</div>' +
+      '<div class="ca-foot"><span class="ca-exposure">Est. exposure ' + money(cp.estimatedExposure) + '</span>' +
+      ((cp.kpiImpact || []).length ? '<span class="ca-kpi">Impacts: ' + cp.kpiImpact.map(escapeHtml).join(" · ") + '</span>' : "") +
+      '</div></div>';
+  }
+
+  function wireCompoundLinks() {
+    document.querySelectorAll(".ca-component.link").forEach(function (elm) {
+      elm.onclick = function () {
+        var belnr = elm.getAttribute("data-belnr");
+        var iv = book.invoices.filter(function (x) { return String(x.belnr) === String(belnr); })[0];
+        if (iv) { selected = iv; renderList(); renderCockpit(); window.scrollTo(0, 0); }
+      };
+    });
+  }
+
   var EMPTY =
     '<div class="empty"><svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3">' +
     '<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>' +
@@ -12056,10 +12753,12 @@ button{font-family:inherit;cursor:pointer}
         window.PIQ._jumpInvoice = null;
       }
       view.innerHTML =
+        renderCompoundSection() +
         '<div class="wrap"><aside class="worklist"><h3>Collections Worklist</h3><div id="invList"></div></aside>' +
         '<main class="cockpit" id="cockpit"></main></div>';
       renderList();
       renderCockpit();
+      wireCompoundLinks();
     },
   };
   window.PIQ.onErp(function () { if (window.PIQ.active === "cockpit") { renderList(); renderCockpit(); } });
@@ -12861,6 +13560,118 @@ button{font-family:inherit;cursor:pointer}
   }
 
   window.PIQ.modules.discovery = { render: render };
+})();
+
+/* ProcessIQ — Executive Themes (Run & Govern sub-view)
+ * The CFO-level rollup: flat per-process KPIs (roi.json) composed into outcome
+ * themes (themes.json). Each theme shows its composite KPI (before→after + delta),
+ * an expandable breakdown of the contributing function KPIs, and the patterns that
+ * drive it as clickable pills that deep-link to the Cognitive Cockpit. */
+(function () {
+  "use strict";
+  var E = window.ProcessIQEngine;
+  var THEMES = (window.PROCESSIQ_THEMES && window.PROCESSIQ_THEMES.themes) || [];
+  var book = window.PIQ.book;
+
+  var expanded = {};   // themeId -> bool (breakdown open?)
+
+  function money(x) { return E._money(x); }
+  function el(t, c, h) { var n = document.createElement(t); if (c) n.className = c; if (h != null) n.innerHTML = h; return n; }
+  function esc(s) { return (s == null ? "" : String(s)).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+  function pat(id) { return window.PIQ.pattern ? window.PIQ.pattern(id) : null; }
+
+  var FN_COLOR = { o2c: "var(--brand2)", p2p: "#7c4dff", sc: "#0aa3a3", credit: "#c0392b" };
+  function fnColor(id) { return FN_COLOR[id] || "var(--sense)"; }
+
+  function render(view) {
+    view.innerHTML = '<div class="roi"><div class="themes-view"></div></div>';
+    var root = view.querySelector(".themes-view");
+    root.appendChild(el("div", "gov-head themes-head",
+      '<div class="kv">The Executive Layer · KPIs roll up to outcomes</div>' +
+      '<h2 style="font-size:22px;margin:2px 0 4px">Executive Themes</h2>' +
+      '<p style="margin:0;color:var(--muted);max-width:820px">A CFO doesn\'t steer by DSO and DPO separately — they steer by outcomes. ' +
+      'Each theme composes per-process KPIs across functions into one number, and every one traces back to the patterns that move it.</p>'));
+
+    if (!THEMES.length) {
+      root.appendChild(el("div", "modstub-card", "<p>No executive themes configured.</p>"));
+      return;
+    }
+    THEMES.forEach(function (t) { root.appendChild(themeCard(t)); });
+    wire(root);
+  }
+
+  function themeCard(t) {
+    var card = el("div", "theme-card");
+    card.setAttribute("data-theme", t.id);
+    var k = (t.themeKPIs || [])[0] || {};
+    var open = !!expanded[t.id];
+
+    // composite delta — signed change of the metric, coloured by whether it's an improvement
+    var goodDir = k.unit === "%" ? "up" : "down";     // %/rate: higher better; days/index: lower better
+    var before = k.compositeBefore, after = k.compositeAfter;
+    var base = Math.abs(before) || 1;
+    var rawChange = Math.round((after - before) / base * 100);
+    var good = goodDir === "down" ? (after < before) : (after > before);
+    var deltaLabel = (rawChange >= 0 ? "+" : "−") + Math.abs(rawChange) + "%";
+
+    var comps = (k.components || []).map(function (c) {
+      var arrow = c.after < c.before ? "↓" : (c.after > c.before ? "↑" : "→");
+      return '<div class="theme-comp-row">' +
+        '<span class="theme-comp-fn">' + esc(c.kpiId) + ' <span class="muted" style="font-weight:500">' + esc(c.functionName) + '</span></span>' +
+        '<div class="theme-comp-bar"><div class="theme-comp-fill" style="width:' + Math.round((c.weight || 0) * 100) + '%;background:' + fnColor(c.functionId) + '"></div></div>' +
+        '<span class="theme-comp-val">' + esc(c.before) + ' → ' + esc(c.after) + ' ' + arrow +
+        ' <span class="muted">· ' + Math.round((c.weight || 0) * 100) + '%</span></span>' +
+        '</div>';
+    }).join("");
+
+    var pills = (k.patternContributors || []).map(function (id) {
+      var p = pat(id);
+      return '<span class="theme-pat-pill" data-pat="' + id + '" title="Open in the Cognitive Cockpit">#' + id +
+        (p ? " " + esc(p.name) : "") + '</span>';
+    }).join("");
+
+    card.innerHTML =
+      '<div class="theme-name"><span class="theme-icon">' + esc(t.icon || "◆") + '</span>' + esc(t.name) + '</div>' +
+      '<div class="theme-q">' + esc(t.executiveQuestion) + '</div>' +
+      '<div class="theme-kpi">' +
+        '<span class="theme-kpi-name">' + esc(k.name) + ' <span class="theme-formula">' + esc(k.formula) + '</span></span>' +
+        '<span class="kpi-val">' + esc(before) + ' → ' + esc(after) + ' <small style="font-size:14px;color:var(--muted)">' + esc(k.unit) + '</small></span>' +
+        '<span class="kpi-delta ' + (good ? "good" : "bad") + '">' + deltaLabel + '</span>' +
+      '</div>' +
+      '<button class="theme-toggle" data-toggle="' + t.id + '">' + (open ? "▾ Hide breakdown" : "▸ Show breakdown") + '</button>' +
+      '<div class="theme-components" style="' + (open ? "" : "display:none") + '">' +
+        comps +
+        '<div class="theme-patterns">' + pills + '</div>' +
+      '</div>' +
+      '<div class="theme-impact">Annual impact <b>' + money(t.annualImpact) + '</b></div>';
+    return card;
+  }
+
+  function wire(root) {
+    root.querySelectorAll("[data-toggle]").forEach(function (b) {
+      b.onclick = function () {
+        var id = b.getAttribute("data-toggle");
+        expanded[id] = !expanded[id];
+        // re-render just this card
+        var view = document.getElementById("view");
+        render(view);
+      };
+    });
+    root.querySelectorAll(".theme-pat-pill").forEach(function (pill) {
+      pill.onclick = function () {
+        var id = +pill.getAttribute("data-pat");
+        var p = pat(id);
+        // deep-link to the cockpit: preselect an invoice that triggers this pattern
+        if (p && book) {
+          var iv = (book.invoices || []).filter(function (x) { return x.groundTruthFeature === p.featureSlug; })[0];
+          if (iv) window.PIQ._jumpInvoice = iv.belnr;
+        }
+        window.PIQ.go("cockpit");
+      };
+    });
+  }
+
+  window.PIQ.modules.themes = { render: render };
 })();
 
 </script>

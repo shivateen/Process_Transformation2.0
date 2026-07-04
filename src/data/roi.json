@@ -12,7 +12,9 @@
       "before": 45,
       "after": 35,
       "better": "down",
-      "note": "Days Sales Outstanding"
+      "note": "Days Sales Outstanding",
+      "functionId": "o2c",
+      "themeId": "working-capital"
     },
     {
       "name": "CEI",
@@ -20,7 +22,9 @@
       "before": 72,
       "after": 90,
       "better": "up",
-      "note": "Collection Effectiveness Index"
+      "note": "Collection Effectiveness Index",
+      "functionId": "o2c",
+      "themeId": "revenue-assurance"
     },
     {
       "name": "Auto-Match",
@@ -28,7 +32,9 @@
       "before": 35,
       "after": 85,
       "better": "up",
-      "note": "Cash auto-applied"
+      "note": "Cash auto-applied",
+      "functionId": "o2c",
+      "themeId": "process-efficiency"
     },
     {
       "name": "Dispute Cycle",
@@ -36,7 +42,9 @@
       "before": 25,
       "after": 12,
       "better": "down",
-      "note": "Time to resolve"
+      "note": "Time to resolve",
+      "functionId": "o2c",
+      "themeId": "revenue-assurance"
     },
     {
       "name": "Deduction Auto",
@@ -45,7 +53,9 @@
       "after": 40,
       "better": "up",
       "note": "Auto-dispositioned",
-      "isNew": true
+      "isNew": true,
+      "functionId": "o2c",
+      "themeId": "process-efficiency"
     }
   ],
   "outcomes": [
@@ -108,7 +118,9 @@
       "featureSlug": "min-viable-payment",
       "priority": "Critical",
       "recovery": 1131000.0,
-      "customers": 13
+      "customers": 13,
+      "functionId": "o2c",
+      "themeId": "customer-risk"
     },
     {
       "patternId": 19,
@@ -117,7 +129,9 @@
       "featureSlug": "credit-limit-velocity",
       "priority": "Critical",
       "recovery": 907000.0,
-      "customers": 8
+      "customers": 8,
+      "functionId": "o2c",
+      "themeId": "customer-risk"
     },
     {
       "patternId": 22,
@@ -126,7 +140,9 @@
       "featureSlug": "score-vs-dso-delta",
       "priority": "Critical",
       "recovery": 768000.0,
-      "customers": 13
+      "customers": 13,
+      "functionId": "o2c",
+      "themeId": "customer-risk"
     },
     {
       "patternId": 10,
@@ -135,7 +151,9 @@
       "featureSlug": "po-mismatch-flag",
       "priority": "High",
       "recovery": 627000.0,
-      "customers": 7
+      "customers": 7,
+      "functionId": "o2c",
+      "themeId": "working-capital"
     },
     {
       "patternId": 11,
@@ -144,7 +162,9 @@
       "featureSlug": "contact-shift-frequency",
       "priority": "High",
       "recovery": 624000.0,
-      "customers": 6
+      "customers": 6,
+      "functionId": "o2c",
+      "themeId": "working-capital"
     },
     {
       "patternId": 29,
@@ -153,7 +173,9 @@
       "featureSlug": "sales-override-freq",
       "priority": "High",
       "recovery": 614000.0,
-      "customers": 6
+      "customers": 6,
+      "functionId": "o2c",
+      "themeId": "revenue-assurance"
     },
     {
       "patternId": 25,
@@ -162,7 +184,9 @@
       "featureSlug": "refund-velocity",
       "priority": "High",
       "recovery": 603000.0,
-      "customers": 7
+      "customers": 7,
+      "functionId": "o2c",
+      "themeId": "process-efficiency"
     },
     {
       "patternId": 3,
@@ -171,7 +195,9 @@
       "featureSlug": "volume-vs-threshold",
       "priority": "High",
       "recovery": 552000.0,
-      "customers": 6
+      "customers": 6,
+      "functionId": "o2c",
+      "themeId": "revenue-assurance"
     },
     {
       "patternId": 8,
@@ -180,7 +206,9 @@
       "featureSlug": "rma-velocity-eom",
       "priority": "High",
       "recovery": 539000.0,
-      "customers": 6
+      "customers": 6,
+      "functionId": "o2c",
+      "themeId": "revenue-assurance"
     },
     {
       "patternId": 4,
@@ -189,7 +217,9 @@
       "featureSlug": "micro-deduction-density",
       "priority": "High",
       "recovery": 523000.0,
-      "customers": 7
+      "customers": 7,
+      "functionId": "o2c",
+      "themeId": "revenue-assurance"
     },
     {
       "patternId": null,
@@ -199,7 +229,9 @@
       "priority": null,
       "recovery": 1512000.0,
       "customers": 45,
-      "isOther": true
+      "isOther": true,
+      "functionId": "o2c",
+      "themeId": null
     }
   ]
 }

@@ -1,0 +1,193 @@
+{
+  "meta": {
+    "title": "ProcessIQ — Cross-Process Compound Patterns",
+    "note": "Collective intelligence layer. Each compound fires when specific per-process patterns co-occur for the same entity.",
+    "compoundCount": 8
+  },
+  "compounds": [
+    {
+      "id": "CP-001",
+      "name": "Bust-Out Fraud Setup",
+      "severity": "critical",
+      "description": "Customer simultaneously gaming dispute timing (Collections), requesting duplicate refunds (Cash App), and showing credit deterioration (Credit) — the classic bust-out precursor. No single process sees all three.",
+      "componentPatternIds": [
+        1,
+        22,
+        25
+      ],
+      "logic": "ALL",
+      "windowDays": 90,
+      "entityKey": "KUNNR",
+      "themeId": "customer-risk",
+      "recommendation": "Immediate credit hold + joint review by Collections, Credit, and Cash App teams. Do not process any refunds until the investigation completes.",
+      "kpiImpact": [
+        "DSO",
+        "Bad Debt"
+      ],
+      "estimatedExposure": 2500000
+    },
+    {
+      "id": "CP-002",
+      "name": "Systematic Revenue Leakage",
+      "severity": "high",
+      "description": "Dispute splitting, Friday-afternoon slicing, and month-end RMA dumps recurring for the same account — deductions engineered to slip through under review thresholds and close-day noise.",
+      "componentPatternIds": [
+        3,
+        4,
+        8
+      ],
+      "logic": {
+        "min": 2,
+        "of": 3
+      },
+      "windowDays": 60,
+      "entityKey": "KUNNR",
+      "themeId": "revenue-leakage",
+      "recommendation": "Consolidate the account's deductions into a single dispute case, freeze auto-approval below threshold, and require substantiation before any credit memo posts.",
+      "kpiImpact": [
+        "Deduction Auto",
+        "Dispute Cycle"
+      ],
+      "estimatedExposure": 1400000
+    },
+    {
+      "id": "CP-003",
+      "name": "Credit Deterioration Cascade",
+      "severity": "critical",
+      "description": "Bust-out precursor velocity, partial breadcrumb payments, and a bureau downgrade stacking up over a quarter — three independent credit-risk tells converging on the same customer.",
+      "componentPatternIds": [
+        19,
+        20,
+        22
+      ],
+      "logic": {
+        "min": 2,
+        "of": 3
+      },
+      "windowDays": 120,
+      "entityKey": "KUNNR",
+      "themeId": "customer-risk",
+      "recommendation": "Re-underwrite the account: reduce the credit limit, move to prepay/COD on new orders, and route open AR to priority collections before exposure grows.",
+      "kpiImpact": [
+        "Bad Debt",
+        "DSO"
+      ],
+      "estimatedExposure": 1900000
+    },
+    {
+      "id": "CP-004",
+      "name": "Stalling-to-Write-Off Pipeline",
+      "severity": "high",
+      "description": "Missing-PO traps, approval musical chairs, a system-migration stall, and portal sabotage chained across half a year — an aging campaign engineered to run the invoice to write-off.",
+      "componentPatternIds": [
+        10,
+        11,
+        12,
+        14
+      ],
+      "logic": {
+        "min": 3,
+        "of": 4
+      },
+      "windowDays": 180,
+      "entityKey": "KUNNR",
+      "themeId": "collections-efficiency",
+      "recommendation": "Escalate to the account owner and legal watch-list; set a hard resolution SLA, disable further stalling loops, and stop the clock before the balance reaches write-off age.",
+      "kpiImpact": [
+        "DSO",
+        "Bad Debt"
+      ],
+      "estimatedExposure": 1100000
+    },
+    {
+      "id": "CP-005",
+      "name": "Cash Application Warfare",
+      "severity": "high",
+      "description": "Duplicate-payment bait, unapplied-cash weaponization, and remittance decoupling hitting the cash-application queue together — a deliberate assault on match rates and float.",
+      "componentPatternIds": [
+        24,
+        25,
+        26
+      ],
+      "logic": {
+        "min": 2,
+        "of": 3
+      },
+      "windowDays": 45,
+      "entityKey": "KUNNR",
+      "themeId": "cash-application",
+      "recommendation": "Quarantine the customer's incoming payments for manual application, reconcile remittances against open items before posting, and claw back any duplicate refunds.",
+      "kpiImpact": [
+        "Auto-Match",
+        "DSO"
+      ],
+      "estimatedExposure": 900000
+    },
+    {
+      "id": "CP-006",
+      "name": "Deduction-Dispute Double Play",
+      "severity": "medium",
+      "description": "Dispute splitting and Friday slicing on the deduction side, paired with duplicate-payment bait on the cash side — the same customer working both the dispute queue and the cash-app queue at once.",
+      "componentPatternIds": [
+        3,
+        4,
+        25
+      ],
+      "logic": "ALL",
+      "windowDays": 60,
+      "entityKey": "KUNNR",
+      "themeId": "revenue-leakage",
+      "recommendation": "Cross-link the deduction and cash-application cases, hold refunds pending dispute resolution, and flag the account for coordinated behaviour review.",
+      "kpiImpact": [
+        "Deduction Auto",
+        "Auto-Match"
+      ],
+      "estimatedExposure": 700000
+    },
+    {
+      "id": "CP-007",
+      "name": "Strategic Account Exploitation",
+      "severity": "high",
+      "description": "A strategic account using relationship shielding, 29th-day dispute timing, and partial breadcrumb payments — leveraging its importance to stretch terms with impunity.",
+      "componentPatternIds": [
+        29,
+        1,
+        20
+      ],
+      "logic": {
+        "min": 2,
+        "of": 3
+      },
+      "windowDays": 90,
+      "entityKey": "KUNNR",
+      "themeId": "customer-risk",
+      "recommendation": "Elevate to the account executive and CFO sponsor: renegotiate terms, cap shielding, and make continued strategic pricing contingent on payment behaviour.",
+      "kpiImpact": [
+        "DSO",
+        "CEI"
+      ],
+      "estimatedExposure": 1600000
+    },
+    {
+      "id": "CP-008",
+      "name": "Coordinated Payment Avoidance",
+      "severity": "medium",
+      "description": "A legal-entity shell game, portal sabotage, and partial breadcrumb payments moving in lock-step — a coordinated effort to make paying on time structurally impossible.",
+      "componentPatternIds": [
+        13,
+        14,
+        20
+      ],
+      "logic": "ALL",
+      "windowDays": 120,
+      "entityKey": "KUNNR",
+      "themeId": "collections-efficiency",
+      "recommendation": "Verify the paying legal entity, restore a working payment channel, and require a firm promise-to-pay with milestone tracking before extending further credit.",
+      "kpiImpact": [
+        "DSO",
+        "CEI"
+      ],
+      "estimatedExposure": 850000
+    }
+  ]
+}

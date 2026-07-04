@@ -23,11 +23,14 @@ def read(*parts):
 def main():
     # Re-generate data first so the build is always current with the xlsx.
     import build_patterns, build_portfolio, build_roi, build_discovery, build_taxonomy  # noqa
+    import build_compounds, build_themes  # noqa
     build_patterns.main()
     build_portfolio.main()
     build_roi.main()
     build_discovery.main()
     build_taxonomy.main()   # depends on patterns.json above
+    build_compounds.main()  # depends on patterns.json above
+    build_themes.main()     # depends on patterns.json above
 
     css = read("src", "css", "app.css")
     body = read("src", "html", "cockpit_body.html")
@@ -44,12 +47,15 @@ def main():
         read("src", "js", "governance.js"),
         read("src", "js", "roi.js"),
         read("src", "js", "discovery.js"),
+        read("src", "js", "themes.js"),
     ])
     patterns = read("src", "data", "patterns.json")
     portfolio = read("src", "data", "portfolio.json")
     roi = read("src", "data", "roi.json")
     discovery = read("src", "data", "discovery.json")
     taxonomy = read("src", "data", "taxonomy.json")
+    compounds = read("src", "data", "compounds.json")
+    themes = read("src", "data", "themes.json")
 
     html = """<!DOCTYPE html>
 <html lang="en">
@@ -70,6 +76,8 @@ def main():
 <script>window.PROCESSIQ_ROI = {roi};</script>
 <script>window.PROCESSIQ_DISCOVERY = {discovery};</script>
 <script>window.PROCESSIQ_TAXONOMY = {taxonomy};</script>
+<script>window.PROCESSIQ_COMPOUNDS = {compounds};</script>
+<script>window.PROCESSIQ_THEMES = {themes};</script>
 <script>
 {engine}
 </script>
@@ -80,7 +88,8 @@ def main():
 </body>
 </html>
 """.format(css=css, body=body, patterns=patterns, portfolio=portfolio, roi=roi,
-           discovery=discovery, taxonomy=taxonomy, engine=engine, js_modules=js_modules)
+           discovery=discovery, taxonomy=taxonomy, compounds=compounds, themes=themes,
+           engine=engine, js_modules=js_modules)
 
     os.makedirs(PUB, exist_ok=True)
     out = os.path.join(PUB, "processiq.html")

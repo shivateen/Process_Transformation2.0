@@ -21,13 +21,29 @@ rng = random.Random(840)  # tied to the $8.4M headline
 YEAR1_TOTAL = 8_400_000
 
 # Tier 1 — KPIs (deck slide 19). better: "down" = lower is better.
+# Each KPI is tagged with the function it belongs to and the executive theme it rolls
+# up into (see build_themes.py / themes.json).
 KPIS = [
-    {"name": "DSO", "unit": "days", "before": 45, "after": 35, "better": "down", "note": "Days Sales Outstanding"},
-    {"name": "CEI", "unit": "%", "before": 72, "after": 90, "better": "up", "note": "Collection Effectiveness Index"},
-    {"name": "Auto-Match", "unit": "%", "before": 35, "after": 85, "better": "up", "note": "Cash auto-applied"},
-    {"name": "Dispute Cycle", "unit": "days", "before": 25, "after": 12, "better": "down", "note": "Time to resolve"},
-    {"name": "Deduction Auto", "unit": "%", "before": 0, "after": 40, "better": "up", "note": "Auto-dispositioned", "isNew": True},
+    {"name": "DSO", "unit": "days", "before": 45, "after": 35, "better": "down",
+     "note": "Days Sales Outstanding", "functionId": "o2c", "themeId": "working-capital"},
+    {"name": "CEI", "unit": "%", "before": 72, "after": 90, "better": "up",
+     "note": "Collection Effectiveness Index", "functionId": "o2c", "themeId": "revenue-assurance"},
+    {"name": "Auto-Match", "unit": "%", "before": 35, "after": 85, "better": "up",
+     "note": "Cash auto-applied", "functionId": "o2c", "themeId": "process-efficiency"},
+    {"name": "Dispute Cycle", "unit": "days", "before": 25, "after": 12, "better": "down",
+     "note": "Time to resolve", "functionId": "o2c", "themeId": "revenue-assurance"},
+    {"name": "Deduction Auto", "unit": "%", "before": 0, "after": 40, "better": "up",
+     "note": "Auto-dispositioned", "isNew": True, "functionId": "o2c", "themeId": "process-efficiency"},
 ]
+
+# Map each pattern category to the executive theme its recoveries roll up into.
+CATEGORY_THEME = {
+    "Credit Risk & Insolvency Indicators": "customer-risk",
+    "Intentional Stalling & Delay Tactics": "working-capital",
+    "Relationship & Contractual Abuse": "revenue-assurance",
+    "Cash Application & Remittance Friction": "process-efficiency",
+    "Dispute & Deduction Manipulation": "revenue-assurance",
+}
 
 # Tier 2 — Business Outcomes (deck slide 19). Illustrative Year-1 figures.
 OUTCOMES = [
@@ -80,6 +96,8 @@ def main():
             "priority": p["priority"],
             "recovery": rec,
             "customers": cust,
+            "functionId": "o2c",
+            "themeId": CATEGORY_THEME.get(p["category"]),
         })
     attribution.sort(key=lambda a: -a["recovery"])
     # remainder bucketed as the long tail of remaining patterns
@@ -89,6 +107,7 @@ def main():
         "patternId": None, "name": f"{other_count} other patterns", "category": "Long tail",
         "featureSlug": None, "priority": None, "recovery": remainder,
         "customers": rng.randint(40, 70), "isOther": True,
+        "functionId": "o2c", "themeId": None,
     })
 
     out = {

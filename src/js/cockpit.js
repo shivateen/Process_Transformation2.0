@@ -232,6 +232,107 @@
   }
   function escapeHtml(s) { return (s == null ? "" : String(s)).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
 
+  /* ---------- Cross-process compound signals (collective intelligence) ----------
+   * After the worklist runs the engine on every invoice, we record each fired
+   * pattern into the engine's per-entity firing history (keyed by customer), then
+   * correlate that history against the compound rules. Compounds surface behaviour
+   * no single process sees. Rendered as red alert cards above the worklist. */
+  var compounds = (window.PROCESSIQ_COMPOUNDS && window.PROCESSIQ_COMPOUNDS.compounds) || [];
+
+  // Deterministic demo history: the same accounts exhibited these patterns in OTHER
+  // processes (Cash App, Credit) earlier in the window. The collections worklist is
+  // only one process, so without this the cross-process layer has nothing to cross.
+  var PRIOR_FIRINGS = [
+    { cust: "Halberd Industrial Group", pid: 22, conf: 0.88 },   // + #1 (worklist) → CP-001
+    { cust: "Halberd Industrial Group", pid: 25, conf: 0.84 },
+    { cust: "Quanta Semiconductors", pid: 20, conf: 0.82 },      // + #19 (worklist) → CP-003
+    { cust: "Quanta Semiconductors", pid: 22, conf: 0.79 },
+    { cust: "Crestfall Retail Holdings", pid: 4, conf: 0.80 },   // + #3 (worklist) → CP-002
+    { cust: "Vanta Pharma Distribution", pid: 1, conf: 0.83 },   // + #20 (worklist) → CP-007
+  ];
+
+  function patternById(id) { return patterns.filter(function (p) { return p.id === id; })[0]; }
+
+  // Build the firing history from the worklist (+ demo priors), then correlate.
+  function scanCompounds() {
+    if (!E.correlate || !compounds.length) return [];
+    E.resetFiringHistory();
+    var evidence = {};   // customer -> [{patternId, invoice}]  (invoice=null for priors)
+    function addEvidence(cust, pid, iv) { (evidence[cust] = evidence[cust] || []).push({ patternId: pid, invoice: iv }); }
+
+    // (1) real firings from the current worklist
+    book.invoices.forEach(function (iv) {
+      var d = E.run(iv, patterns).diagnosis;
+      if (d.fired && d.top && d.top.pattern) {
+        E.recordFiring(iv.customer, d.top.pattern.id, d.confidence);
+        addEvidence(iv.customer, d.top.pattern.id, iv);
+      }
+    });
+    // (2) synthetic prior cross-process firings (demo)
+    PRIOR_FIRINGS.forEach(function (s) {
+      E.recordFiring(s.cust, s.pid, s.conf);
+      addEvidence(s.cust, s.pid, null);
+    });
+    // (3) correlate per unique customer
+    var seen = {}, signals = [];
+    book.invoices.forEach(function (iv) {
+      if (seen[iv.customer]) return; seen[iv.customer] = 1;
+      E.correlate(iv.customer, compounds).forEach(function (sig) {
+        signals.push({ customer: iv.customer, sig: sig, evidence: evidence[iv.customer] || [] });
+      });
+    });
+    // most severe first
+    var rank = { critical: 0, high: 1, medium: 2, low: 3 };
+    function rk(s) { return s.sig.severity in rank ? rank[s.sig.severity] : 9; }
+    signals.sort(function (a, b) { return rk(a) - rk(b); });
+    return signals;
+  }
+
+  function renderCompoundSection() {
+    var signals = scanCompounds();
+    if (!signals.length) return "";
+    return '<div class="compound-band"><div class="cb-head">' +
+      '<span class="cb-title">⚠ Cross-Process Compound Signals</span>' +
+      '<span class="cb-count">' + signals.length + '</span>' +
+      '<span class="cb-sub">Collective intelligence — behaviour no single process sees, correlated across Collections, Credit &amp; Cash App for the same customer.</span>' +
+      '</div>' + signals.map(compoundCard).join("") + '</div>';
+  }
+
+  function compoundCard(s) {
+    var cp = s.sig.compound, matched = s.sig.matchedComponentIds;
+    var comps = cp.componentPatternIds.map(function (pid) {
+      var p = patternById(pid);
+      var isM = matched.indexOf(pid) >= 0;
+      var ev = (s.evidence || []).filter(function (e) { return e.patternId === pid; })[0];
+      var clickable = !!(ev && ev.invoice);
+      return '<span class="ca-component' + (isM ? " matched" : "") + (clickable ? " link" : "") + '"' +
+        (clickable ? ' data-belnr="' + ev.invoice.belnr + '" title="Open the invoice evidence"' : ' title="' + (isM ? "Prior signal from another process" : "Not yet fired") + '"') + '>' +
+        (isM ? "● " : "○ ") + "#" + pid + " " + escapeHtml(p ? p.name : "Pattern " + pid) + '</span>';
+    }).join("");
+    return '<div class="compound-alert sev-' + escapeHtml(cp.severity) + '">' +
+      '<div class="ca-head"><span class="ca-title">' + escapeHtml(cp.name) + '</span>' +
+      '<span class="ca-sev ' + escapeHtml(cp.severity) + '">' + escapeHtml(cp.severity.toUpperCase()) + '</span></div>' +
+      '<div class="ca-meta"><b>' + escapeHtml(s.customer) + '</b> · ' + matched.length + ' of ' +
+      cp.componentPatternIds.length + ' patterns · ' + (s.sig.confidence * 100 | 0) + '% confidence · ' +
+      cp.windowDays + 'd window</div>' +
+      '<div class="ca-desc">' + escapeHtml(cp.description) + '</div>' +
+      '<div class="ca-components">' + comps + '</div>' +
+      '<div class="ca-rec"><b>Recommendation.</b> ' + escapeHtml(cp.recommendation) + '</div>' +
+      '<div class="ca-foot"><span class="ca-exposure">Est. exposure ' + money(cp.estimatedExposure) + '</span>' +
+      ((cp.kpiImpact || []).length ? '<span class="ca-kpi">Impacts: ' + cp.kpiImpact.map(escapeHtml).join(" · ") + '</span>' : "") +
+      '</div></div>';
+  }
+
+  function wireCompoundLinks() {
+    document.querySelectorAll(".ca-component.link").forEach(function (elm) {
+      elm.onclick = function () {
+        var belnr = elm.getAttribute("data-belnr");
+        var iv = book.invoices.filter(function (x) { return String(x.belnr) === String(belnr); })[0];
+        if (iv) { selected = iv; renderList(); renderCockpit(); window.scrollTo(0, 0); }
+      };
+    });
+  }
+
   var EMPTY =
     '<div class="empty"><svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3">' +
     '<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>' +
@@ -247,10 +348,12 @@
         window.PIQ._jumpInvoice = null;
       }
       view.innerHTML =
+        renderCompoundSection() +
         '<div class="wrap"><aside class="worklist"><h3>Collections Worklist</h3><div id="invList"></div></aside>' +
         '<main class="cockpit" id="cockpit"></main></div>';
       renderList();
       renderCockpit();
+      wireCompoundLinks();
     },
   };
   window.PIQ.onErp(function () { if (window.PIQ.active === "cockpit") { renderList(); renderCockpit(); } });
