@@ -34,7 +34,7 @@
     },
   };
 
-  /* ---- journey map: 3 stages, each with sub-views ---------------------- */
+  /* ---- journey map: 4 stages, each with sub-views ---------------------- */
   var STAGES = [
     { id: "design", n: 1, label: "Design", tag: "Missions → Actions", sub: [
         { id: "studio", label: "Studio" },
@@ -42,7 +42,10 @@
     { id: "fit", n: 2, label: "Discover & Fit", tag: "Discovery & Agent Fitment", sub: [
         { id: "fitment", label: "Agent Fitment" },
         { id: "discovery", label: "Discovery Engine" } ] },
-    { id: "run", n: 3, label: "Run & Govern", tag: "Agentic Workflow", sub: [
+    { id: "build", n: 3, label: "Build", tag: "Action Block Configuration", sub: [
+        { id: "workshop", label: "Block Workshop" },
+        { id: "blueprint", label: "Activity Blueprint" } ] },
+    { id: "run", n: 4, label: "Run & Govern", tag: "Agentic Workflow", sub: [
         { id: "runtime", label: "Live Operations" },
         { id: "cockpit", label: "Cognitive Cockpit" },
         { id: "governance", label: "Governance" },

@@ -23,7 +23,7 @@ def read(*parts):
 def main():
     # Re-generate data first so the build is always current with the xlsx.
     import build_patterns, build_portfolio, build_roi, build_discovery, build_taxonomy  # noqa
-    import build_compounds, build_themes  # noqa
+    import build_compounds, build_themes, build_build  # noqa
     build_patterns.main()
     build_portfolio.main()
     build_roi.main()
@@ -31,6 +31,7 @@ def main():
     build_taxonomy.main()   # depends on patterns.json above
     build_compounds.main()  # depends on patterns.json above
     build_themes.main()     # depends on patterns.json above
+    build_build.main()      # depends on patterns.json above
 
     css = read("src", "css", "app.css")
     body = read("src", "html", "cockpit_body.html")
@@ -48,6 +49,7 @@ def main():
         read("src", "js", "roi.js"),
         read("src", "js", "discovery.js"),
         read("src", "js", "themes.js"),
+        read("src", "js", "build.js"),
     ])
     patterns = read("src", "data", "patterns.json")
     portfolio = read("src", "data", "portfolio.json")
@@ -56,6 +58,7 @@ def main():
     taxonomy = read("src", "data", "taxonomy.json")
     compounds = read("src", "data", "compounds.json")
     themes = read("src", "data", "themes.json")
+    build_data = read("src", "data", "build.json")
 
     html = """<!DOCTYPE html>
 <html lang="en">
@@ -78,6 +81,7 @@ def main():
 <script>window.PROCESSIQ_TAXONOMY = {taxonomy};</script>
 <script>window.PROCESSIQ_COMPOUNDS = {compounds};</script>
 <script>window.PROCESSIQ_THEMES = {themes};</script>
+<script>window.PROCESSIQ_BUILD = {build_data};</script>
 <script>
 {engine}
 </script>
@@ -89,7 +93,7 @@ def main():
 </html>
 """.format(css=css, body=body, patterns=patterns, portfolio=portfolio, roi=roi,
            discovery=discovery, taxonomy=taxonomy, compounds=compounds, themes=themes,
-           engine=engine, js_modules=js_modules)
+           build_data=build_data, engine=engine, js_modules=js_modules)
 
     os.makedirs(PUB, exist_ok=True)
     out = os.path.join(PUB, "processiq.html")
